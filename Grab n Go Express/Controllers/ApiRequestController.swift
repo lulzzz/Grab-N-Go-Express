@@ -36,12 +36,81 @@ class ApiRequestController: JsonRequestController {
     // To do: implement the ability to add headers,
     // such as Authentication: Basic XXXX, etc.
     
+    /* Errors */
+    /*
+    Errors
+    
+    401     No action identifier in json
+    402     No phone number
+    403     No pin num
+    404     Phone number is too short
+    405     Phone number is too long
+    500     Unknown exception or unable to connect to database
+    501     Authenticate:   no such user
+    502     Authenticate:   passcode is incorrect
+    506     Authenticate:   user already registered
+    600     Token Charge:   Invalid phone number
+    601     Token Charge:   Invalid pin number
+    610     Token Charge:   No token hex provided
+    611     Token Charge:   Unable to charge token
+    602     Token Registration:   No credit card provided
+    603     Token Registration:   No expiration date
+    604     Token Registration:   Invalid zip code
+    605     Token Registration:   Invalid CCV Code
+    610     Token Registration:   Unable to obtain token
+    612     Token Registration:   Problem obtaining token
+    */
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        errorDescriptions[401] = "No Action Identifier in Json";
+        errorDescriptions[402] = "No Phone Number Provided in Json";
+        errorDescriptions[403] = "No Passcode Provided in Json";
+        errorDescriptions[404] = "Phone Number in Json is too short";
+        errorDescriptions[405] = "Phone Number in Json is too long";
+        errorDescriptions[500] = "Unknown Error - General Exception";
+        errorDescriptions[501] = "This Phone Number is not Registered";
+        errorDescriptions[502] = "The Passcode Provided is Incorrect";
+        errorDescriptions[506] = "This Phone Number is Already Registered";
+        errorDescriptions[600] = "Invalid Phone Number Provided";
+        errorDescriptions[601] = "Invalid Pin Number Provided";
+        errorDescriptions[602] = "No credit card provided";
+        errorDescriptions[604] = "Invalid Zip Code";
+        errorDescriptions[605] = "Invalid CCV Code";
+        errorDescriptions[401] = "No Action Identifier in Json";
+        errorDescriptions[610] = "No Token Hex Provided in Json";
+        errorDescriptions[611] = "Unable to Charge Credit Card";
+        
+        
         // Do any additional setup after loading the view.
     }
 
+    func processErrors(jsonData: JSON)
+    {
+        print(jsonData)
+        let error: NSNumber = jsonData["Error"].number!
+        let errorInt: Int = error.integerValue
+        let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: errorDescriptions[errorInt]!)
+        view.addSubview(errorAlertView)
+        errorAlertView.centerOKButtonAnimated()
+        //backgroundImageView.alpha = 0.50
+        //errorAlertView.okButton.setTitle("Re-Enter", forState: .Normal)
+        //errorAlertView.cancelButton.setTitle("Cancel", forState: .Normal)
+        //errorAlertView.okButton.removeTarget(nil, action: nil, forControlEvents: .AllEvents)
+    
+        //errorAlertView.okButton.addTarget(self, action: "retryCCV", forControlEvents: UIControlEvents.TouchDown)
+        
+        /*
+        
+        cell.textLabel?.text = "\(key)"
+        cell.detailTextLabel?.text = value.description
+        animatedRegistrationProcess.animateOut()
+        
+        myAlert = errorAlertView
+        */
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -229,6 +298,21 @@ class ApiRequestController: JsonRequestController {
         return bValidCredentials
     }
 
+    func loginRequest(user: User) -> Bool
+    {
+        print(user)
+        addParameter("phone_num", value: user.phoneNumber)
+        addParameter("pin_num", value: user.passcode)
+        addParameter("action", value: "login")
+        networkRequest(loginResult)
+        return false
+    }
+    
+    func loginResult(jsonData: JSON)
+    {
+        print("loginResult called")
+    }
+    
     func registerUser(registration: Registration)
     {
         resetJsonObj()
@@ -323,9 +407,127 @@ class ApiRequestController: JsonRequestController {
     func loginErrorInvalidPasscode(){
         
     }
+    
+    /* Errors */
+    /*
+    Errors
+    
+    401     No action identifier in json
+    402     No phone number
+    403     No pin num
+    404     Phone number is too short
+    405     Phone number is too long
+    500     Unknown exception or unable to connect to database
+    501     Authenticate:   no such user
+    502     Authenticate:   passcode is incorrect
+    506     Authenticate:   user already registered
+    600     Token Charge:   Invalid phone number
+    601     Token Charge:   Invalid pin number
+    610     Token Charge:   No token hex provided
+    611     Token Charge:   Unable to charge token
+    602     Token Registration:   No credit card provided
+    603     Token Registration:   No expiration date
+    604     Token Registration:   Invalid zip code
+    605     Token Registration:   Invalid CCV Code
+    610     Token Registration:   Unable to obtain token
+    612     Token Registration:   Problem obtaining token
+    */
+    
+    var errorDescriptions: Dictionary = Dictionary<Int, String>()
+    
+    func noActionIdentifier()
+    {
+        // Error 401
+        // No action identifier in json
+    }
+    
+    func noPhoneNumber()
+    {
+        // Error 402
+        // No phone number
+    }
+    
+    func noPasscode()
+    {
+        // Error 403
+        // No pin num
+    }
+    
+    func phoneNumberTooShort()
+    {
+        // Error 404
+        // Phone number is too short
+    }
+    
+    func phoneNumberTooLong()
+    {
+        // Error 405
+        // Phone number is too long
+    }
+    
+    func unknownException()
+    {
+        // Error 500
+        // Unknown Exception
+    }
+    
+    func noSuchUser()
+    {
+        // Error 501
+        // No such user
+    }
+    
+    func passcodeIncorrect()
+    {
+        // Error 502
+        // pin_num does not match
+    }
+    
+    func userAlreadyRegistered()
+    {
+        // Error 506
+        // User already registered
+    }
+    
+    func noCreditCardProvided()
+    {
+        // Error 602
+        // No credit card provided
+    }
+    
+    func noExpirationDateProvided()
+    {
+        // Error 603
+        // No Expiration Date provided
+    }
+    
+    func invalidZipCode()
+    {
+        // Error 604
+        // Invalid zip code
+    }
+    
+    func invalidCCVCode()
+    {
+        // Error 605
+        // Invalid CCV provided
+    }
+    
+    func noTokenHexProvided()
+    {
+        // Error 610
+        // No Token Hex Provided
+    }
+    
+    func unableToChargeToken()
+    {
+        // Error 611
+        // Unable to charge token
+    }    
+    
 }
 
 /*
 
-	
+
 */

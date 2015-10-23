@@ -21,10 +21,8 @@ class SelfCheckoutView: UIController {
     var amountDueButton: UIButton = UIButton()
     var paynowButton: UIButton = UIButton()
     
-    
+    var user: User = User()
 
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setBackgroundImage("background_selfcheckout.png")
@@ -36,7 +34,10 @@ class SelfCheckoutView: UIController {
         // Dispose of any resources that can be recreated.
     }
     
-
+    func login(user: User)
+    {
+        self.user = user
+    }
     /*
     // MARK: - Navigation
 

@@ -61,7 +61,7 @@ class NetworkRequestController: UIElementController {
         
         let params = jsonDataObj
         
-        //print(params)
+        print(params)
         //let jsonData = try! NSJSONSerialization.dataWithJSONObject(params, options: [])
         let request = NSMutableURLRequest(URL: NSURL(string: urlResource)!)
         
@@ -85,9 +85,7 @@ class NetworkRequestController: UIElementController {
         let task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler:
             {
                 data, response, error in
-                
-                //print(response)
-                
+
                 if error != nil {
                     print(error!.localizedDescription)
                     timeout()
@@ -95,12 +93,14 @@ class NetworkRequestController: UIElementController {
                 } else {
                     print("Completion function called")
                     let json = JSON(data: data!)
-                    print(json)
-                    completion(json)
+                    
+                    dispatch_async(dispatch_get_main_queue(), {
+                        
+                        completion(json)
+                        
+                    })
+                    
                 }
-                
-                
-                
         })
         
         //print("Task.resume called\r\n")

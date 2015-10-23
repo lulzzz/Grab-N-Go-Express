@@ -146,6 +146,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                 self.label.alpha = 1.0
                 self.cancelButton.alpha = 1.0
                 self.cancelButton.frame = CGRect(x: self.frame.width/2-self.cancelButton.frame.width/2, y: self.cancelButton.frame.origin.y, width: self.cancelButton.frame.width, height: self.cancelButton.frame.height)
+                
             }, completion: nil)
     }
     
@@ -162,6 +163,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                 options: .CurveEaseOut, animations: {
                     self.label.alpha = 1.0
                     self.cancelButton.alpha = 1.0
+                    self.okButton.alpha = 0.0
                     self.cancelButton.frame = CGRect(x: self.frame.width/2-self.cancelButton.frame.width/2, y: self.cancelButton.frame.origin.y, width: self.cancelButton.frame.width, height: self.cancelButton.frame.height)
                 }, completion: nil)
             label.text = rVal

@@ -88,6 +88,17 @@ class ErrorAlertControl: UIView {
             }, completion: nil)
     }
     
+    func centerOKButtonAnimated()
+    {
+        UIView.animateWithDuration(0.5, delay: 0.0,
+            options: .CurveEaseOut, animations: {
+                self.label.alpha = 1.0
+                self.cancelButton.alpha = 0.0
+                self.okButton.frame = CGRect(x: self.frame.width/2-self.cancelButton.frame.width/2, y: self.cancelButton.frame.origin.y, width: self.cancelButton.frame.width, height: self.cancelButton.frame.height)
+                self.okButton.alpha = 1.0
+            }, completion: nil)
+    }
+    
     func ok()
     {
         delegate?.errorOK!()

@@ -184,7 +184,28 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         print("Login Button Pressed");
         advanceState()
     }
-
+    
+    override func loginResult(jsonData: JSON)
+    {
+        //print("loginResult called 2")
+        //print(jsonData)
+        let error = jsonData["Error"]
+        if(error == 0)
+        {
+            print("Error = 0")
+        user.userAuthenticated(phoneNumber, passcode: passcode)
+        let selfCheckoutView: SelfCheckoutView = SelfCheckoutView()
+        selfCheckoutView.view.backgroundColor = UIColor.whiteColor()
+        selfCheckoutView.login(user)
+        self.presentViewController(selfCheckoutView, animated: true, completion: nil)
+        }
+        else
+        {
+            resetScreen()
+            processErrors(jsonData)
+        }
+    }
+    
     func resetScreen()
     {
         loginStatus = .Anonymous
@@ -198,6 +219,9 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         
         print("Reset screen");
         print(user.phoneNumber)
+        
+        
+        //animatedRegistrationProcess.animateOut()
         
         UIView.animateWithDuration(0.5, delay: 0.4,
             options: .CurveEaseOut, animations: {
@@ -309,7 +333,8 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
      func phoneNumberCompletion(phoneNumber: String)
      {
-            self.phoneNumber = phoneNumber
+        
+        self.phoneNumber = phoneNumber
             // Animate phoneNumberControl offscreen
       
         UIView.animateWithDuration(0.5, delay: 0.5,
@@ -354,21 +379,19 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         
         if(bIsRegistering==false)
         {
-            if(checkPin(user) == true)
-            {
-                user.userAuthenticated(phoneNumber, passcode: passcode)
-                print("checkPin returned true");
+            //if(checkPin(user) == true)
+            //{
+            
+                //print("checkPin returned true");
                 // Let's move on to our SelfCheckoutView
-                let selfCheckoutView: SelfCheckoutView = SelfCheckoutView()
-                selfCheckoutView.view.backgroundColor = UIColor.whiteColor()
-                self.presentViewController(selfCheckoutView, animated: true, completion: nil)
-            }
-            else
-            {
-                
-                print("checkPin returned false")
-                user.userLoggedOff()
-            }
+                loginRequest(user)
+            //}
+            //else
+            //{
+            //
+            //    print("checkPin returned false")
+            //    user.userLoggedOff()
+            //}
         }
         else
         {
@@ -392,6 +415,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     {
         registerUserView = RegisterUserControl()
         registerUserView.delegate = self
+        bIsRegistering = false
         view.addSubview(registerUserView)
         backgroundImageView.alpha = 0.50
         registerUserView.okButton.setTitle("Let's GO!", forState: .Normal)
@@ -431,15 +455,18 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         
         let error = jsonData["Error"]
         
-        let error_code = jsonData["error_code"]
-        
-        
         switch(error)
         {
         case 0:
             dispatch_async(dispatch_get_main_queue(), {
                 self.animatedRegistrationProcess.animateOut()
+                let user: User = self.user
                 self.resetScreen()
+                let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "Registration Successfull")
+                errorAlertView.cancelButton.hidden = true
+                errorAlertView.centerOKButtonAnimated()
+                self.view.addSubview(errorAlertView)
+                self.loginRequest(user)
             })
             
             break
@@ -450,11 +477,11 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
                 })
             break
             
-        case 402:
-            
-            break
-            
         default:
+            dispatch_async(dispatch_get_main_queue(), {
+                self.resetScreen()
+                self.processErrors(jsonData)
+            })
             break
         }
     }
@@ -572,7 +599,10 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         //self.registrationErrorInvalidCCV()
         print("timeout")
             
+        if(self.bIsRegistering==true)
+        {
         self.animatedRegistrationProcess.animateOut()
+        }
         //self.registrationErrorInvalidCCV()
         
         let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "Unable to connect to the Internet.  Please call your service provider.  I am unable to continue")
