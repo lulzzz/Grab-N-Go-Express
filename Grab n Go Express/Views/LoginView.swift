@@ -471,11 +471,11 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
             
             break
             
-        case 610:
-            dispatch_async(dispatch_get_main_queue(), {
-                self.registrationErrorInvalidCCV()
-                })
-            break
+        //case 610:
+        //    dispatch_async(dispatch_get_main_queue(), {
+        //        self.registrationErrorInvalidCCV()
+        //        })
+        //    break
             
         default:
             dispatch_async(dispatch_get_main_queue(), {

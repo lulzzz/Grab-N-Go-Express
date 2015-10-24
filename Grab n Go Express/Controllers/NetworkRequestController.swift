@@ -95,7 +95,7 @@ class NetworkRequestController: UIElementController {
                     let json = JSON(data: data!)
                     
                     dispatch_async(dispatch_get_main_queue(), {
-                        
+                        print(json)
                         completion(json)
                         
                     })

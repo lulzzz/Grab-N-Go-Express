@@ -91,7 +91,13 @@ class ApiRequestController: JsonRequestController {
         print(jsonData)
         let error: NSNumber = jsonData["Error"].number!
         let errorInt: Int = error.integerValue
-        let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: errorDescriptions[errorInt]!)
+        var alertText = errorDescriptions[errorInt]
+        if let error_message = jsonData["error_message"].string
+        {
+            alertText = error_message
+        }
+        
+        let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: alertText!)
         view.addSubview(errorAlertView)
         errorAlertView.centerOKButtonAnimated()
         //backgroundImageView.alpha = 0.50
