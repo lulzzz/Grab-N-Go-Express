@@ -486,9 +486,9 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
             break
             
         case 610:
-            dispatch_async(dispatch_get_main_queue(), {
-                self.registrationErrorInvalidCCV()
-                })
+                self.processErrors(jsonData)
+                //self.registrationErrorInvalidCCV()
+               
             break
             
         default:
@@ -502,20 +502,30 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
     override func processErrors(jsonData: JSON) {
 
-        animatedRegistrationProcess.animateOut()
-        super.processErrors(jsonData)
+        if(bIsRegistering==true)
+        {
+            animatedRegistrationProcess.animateOut()
+        }
         
-        /*
-        let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "The CCV code doesn't match, please re-enter")
-        errorAlertView.delegate = self
-        view.addSubview(errorAlertView)
-        backgroundImageView.alpha = 0.50
-        errorAlertView.okButton.setTitle("Re-Enter", forState: .Normal)
-        errorAlertView.cancelButton.setTitle("Cancel", forState: .Normal)
-        errorAlertView.okButton.removeTarget(nil, action: nil, forControlEvents: .AllEvents)
-        errorAlertView.okButton.addTarget(self, action: "retryCCV", forControlEvents: UIControlEvents.TouchDown)
-        myAlert = errorAlertView
-        */
+        if let error_message = jsonData["error_code"].int
+        {
+            switch(error_message)
+            {
+            case 3:
+                registrationErrorInvalidCCV()
+                break;
+                
+            default:
+                super.processErrors(jsonData)
+                break
+            }
+        }
+        else
+        {
+            super.processErrors(jsonData)
+        }
+        
+        
     }
     
     func registrationError(jsonData: NSString) {

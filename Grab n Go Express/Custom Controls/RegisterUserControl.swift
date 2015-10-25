@@ -135,7 +135,6 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     {
         self.init(frame: CGRect.zero)
         label.text = errorText
-        // print(errorText)
     }
     
     func ok()
@@ -262,8 +261,6 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             break
             
         }
-        // print(currentState)
-        // print(rVal)
         return rVal
     }
     
@@ -287,35 +284,37 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             let screenSize: CGRect = UIScreen.mainScreen().bounds
             self.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.height)
         }
-        print(self.frame)
     }
     
     func setFrameB()
     {
-        print("Set Frame B")
         self.frame = CGRect(x: self.frame.origin.x, y: self.frame.origin.y+self.frame.height/2, width: self.frame.width, height: 0)
-        print(self.frame)
     }
     
     func setFrameC()
     {
-        print("Set Frame C")
         if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
         {
         keypadControl.frame = CGRect(x: self.frame.width/2-keypadControl.keypadControlWidth/2, y: 191, width: keypadControl.keypadControlWidth, height: keypadControl.keypadControlHeight)
         }
         else
         {
-        keypadControl.frame = CGRect(x: self.frame.width/2-keypadControl.keypadControlWidth/2, y: frame.height-keypadControl.frame.height-150, width: keypadControl.keypadControlWidth, height: keypadControl.keypadControlHeight)
+            
+        keypadControl.frame = CGRect(x: self.frame.width/2-keypadControl.keypadControlWidth/2, y: label.frame.height+label.frame.origin.y, width: keypadControl.keypadControlWidth, height: keypadControl.keypadControlHeight)
+
+            //print(frame)
+            //print(keypadControl.frame)
+            //print(keypadControl.keypadControlWidth)
+            //print(keypadControl.keypadControlHeight)
         }
-        print(self.keypadControl.frame)
     }
     
     func setFrameD()
     {
-        
+        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        {
         self.label.frame = CGRect(x: self.label.frame.origin.x, y: 0, width: self.frame.width, height: 120)
-        print(self.label.frame)
+        }
     }
     
     func setFrameE()
@@ -334,7 +333,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                     self.setFrameA()
                 }
                 
-                self.label.frame = CGRect(x: self.label.frame.origin.x, y: 0, width: self.frame.width, height: 120)
+                //self.label.frame = CGRect(x: self.label.frame.origin.x, y: 0, width: self.frame.width, height: 120)
                 self.cancelButton.frame.origin.y = self.frame.height-self.cancelButton.frame.height-22
                 self.inputTextField.frame = CGRect(x: self.label.frame.origin.x, y: self.label.frame.height, width: self.frame.width, height: 75)
                 self.inputTextField.backgroundColor = UIColor.whiteColor()
@@ -402,8 +401,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             {
                 registration.zipcode = inputTextField.text!
                 inputTextField.text = "";
-                
-                // print("Zip Code Entered")
+
                 UIView.animateWithDuration(0.5, delay: 0.0,
                     options: .CurveEaseOut, animations: {
                         self.label.alpha = 0.0
@@ -433,15 +431,13 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                         {
                             self.registration.first_name = "Anonymous"
                             self.registration.last_name = "Anonymous"
-                            print(self.registration)
                         }
                         self.delegate?.registrationCompleted()
                         self.cancel()
                     });             
             }
         }
-        
-        print(inputTextField.text)
+
         if(currentState == registrationState.manualEnterCreditCard)
         {
             if(inputTextField.text?.characters.count==4)
@@ -472,8 +468,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                 bClearTextLabel = true
                 return
             }
-            
-            print(inputTextField.text?.characters.count)
+
         }
         
         if(currentState == registrationState.manualEnterExpirationDate)

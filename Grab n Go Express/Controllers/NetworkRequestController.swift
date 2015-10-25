@@ -60,8 +60,7 @@ class NetworkRequestController: UIElementController {
         addParameter("location_upc_identifier", value: "10000000020")
         
         let params = jsonDataObj
-        
-        print(params)
+
         //let jsonData = try! NSJSONSerialization.dataWithJSONObject(params, options: [])
         let request = NSMutableURLRequest(URL: NSURL(string: urlResource)!)
         
@@ -73,21 +72,13 @@ class NetworkRequestController: UIElementController {
         do {
             request.HTTPBody = try NSJSONSerialization.dataWithJSONObject(params, options: [])
         } catch {
-            //print("Error was received")
-            //print(error)
         }
-        
-        print("Going to call dataTaskWithRequest\r\n")
-        
-        //print(request)
-        //print(request.HTTPBody)
         
         let task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler:
             {
                 data, response, error in
 
                 if error != nil {
-                    print(error!.localizedDescription)
                     dispatch_async(dispatch_get_main_queue(), {
                         timeout()
                     })
@@ -95,29 +86,22 @@ class NetworkRequestController: UIElementController {
                     
                     
                 } else {
-                    print("Completion function called")
                     let json = JSON(data: data!)
                     
                     dispatch_async(dispatch_get_main_queue(), {
-                        print(json)
                         completion(json)
                         
                     })
                     
                 }
         })
-        
-        //print("Task.resume called\r\n")
-        task.resume() //Tasks are called with .resume()
+
+        task.resume()
     }
     
     func timeout()
     {
-        
-        //var jsonString = "{ \"Error\":\"0\" }";
-        //let json = JSON(data: jsonString)
-        //print(json)
-        //completion(0)
+
     }
     
     func errorExit()

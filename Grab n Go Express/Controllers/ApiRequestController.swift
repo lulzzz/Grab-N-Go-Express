@@ -89,12 +89,9 @@ class ApiRequestController: JsonRequestController {
 
     func processErrors(jsonData: JSON)
     {
-        print(jsonData)
         let error: NSNumber = jsonData["Error"].number!
         let errorInt: Int = error.integerValue
         var alertText = errorDescriptions[errorInt]
-        print("------")
-        print(jsonData["error_message"].string)
         if let error_message = jsonData["error_message"].string
         {
             alertText = error_message
@@ -313,7 +310,6 @@ class ApiRequestController: JsonRequestController {
 
     func loginRequest(user: User) -> Bool
     {
-        print(user)
         addParameter("phone_num", value: user.phoneNumber)
         addParameter("pin_num", value: user.passcode)
         addParameter("action", value: "login")
@@ -323,7 +319,7 @@ class ApiRequestController: JsonRequestController {
     
     func loginResult(jsonData: JSON)
     {
-        print("loginResult called")
+
     }
     
     func registerUser(registration: Registration)
@@ -340,8 +336,7 @@ class ApiRequestController: JsonRequestController {
         addParameter("phone_num", value: registration.phoneNumber)
         addParameter("zipcode", value: registration.zipcode)
         addParameter("action", value: "register")
-        
-        print(registration)
+
         networkRequest(registrationConfirmed)
         
         
@@ -368,7 +363,6 @@ class ApiRequestController: JsonRequestController {
         addParameter("phone_num", value: registration.phoneNumber)
         addParameter("zipcode", value: registration.zipcode)
         addParameter("action", value: "register")
-        print(registration)
         networkRequest(registrationConfirmed)
     }
     

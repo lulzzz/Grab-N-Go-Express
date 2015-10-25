@@ -71,6 +71,19 @@ label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
         cancelButton.addTarget(self, action: "cancel", forControlEvents: UIControlEvents.TouchUpInside)
         addSubview(cancelButton)
         
+        if(UIDevice.currentDevice().userInterfaceIdiom == .Phone)
+        {
+            // If we're in an iPhone
+            //self.frame = CGRect(x: 0, y: screenSize.height/2-screenSize.height/4, width: screenSize.width, height: screenSize.height/2)
+            //label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
+            
+            //label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height/2)
+            
+            okButton.frame = CGRectMake(self.frame.width/2-btnWidth/2, self.frame.height-btnHeight-btnSpacing-btnHeight-5, btnWidth, btnHeight)
+            
+            cancelButton.frame = CGRectMake(self.frame.width/2-btnWidth/2, self.frame.height-btnHeight-btnSpacing, btnWidth, btnHeight)
+        }
+        
         label.backgroundColor = UIColor.clearColor()
         label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
         label.textAlignment = .Center
