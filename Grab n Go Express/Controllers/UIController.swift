@@ -25,6 +25,7 @@ class UIController : ApiRequestController, ErrorControlDelegate
     enum deviceType {
             case iPad
             case iPadMini
+            case iPhone
             case iPhone3
             case iPhone4
             case iPhone5
@@ -40,7 +41,14 @@ class UIController : ApiRequestController, ErrorControlDelegate
         
         // For development only.
        // return deviceType.iPhone4
+        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        {
             return deviceType.iPad
+        }
+        else
+        {
+            return deviceType.iPhone
+        }
         
         var systemInfo = utsname()
         uname(&systemInfo)
@@ -51,6 +59,7 @@ class UIController : ApiRequestController, ErrorControlDelegate
                 guard let value = element.value as? Int8 where value != 0 else { return identifier }
                 return identifier + String(UnicodeScalar(UInt8(value)))
             }
+        
         
         switch identifier {
         case "iPod5,1":                                 return deviceType.iPhone4

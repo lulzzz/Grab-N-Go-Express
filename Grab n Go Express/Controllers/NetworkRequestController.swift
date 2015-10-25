@@ -88,7 +88,11 @@ class NetworkRequestController: UIElementController {
 
                 if error != nil {
                     print(error!.localizedDescription)
-                    timeout()
+                    dispatch_async(dispatch_get_main_queue(), {
+                        timeout()
+                    })
+                    
+                    
                     
                 } else {
                     print("Completion function called")

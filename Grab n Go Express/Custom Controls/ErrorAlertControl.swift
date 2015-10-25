@@ -28,7 +28,20 @@ class ErrorAlertControl: UIView {
         
         let screenSize: CGRect = UIScreen.mainScreen().bounds
         
-        self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
+// If we're in an iPad
+if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+{
+self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
+label.font =  UIFont(name: "CardenioModern-Bold", size: 61.0)
+}
+else
+{
+// If we're in an iPhone
+self.frame = CGRect(x: 0, y: screenSize.height/2-screenSize.height/4, width: screenSize.width, height: screenSize.height/2)
+label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
+}
+
+        //self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
         backgroundColor = UIColor.whiteColor()
         //layer.cornerRadius = 10.0
         layer.borderColor = UIColor.grayColor().CGColor
@@ -62,7 +75,6 @@ class ErrorAlertControl: UIView {
         label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
         label.textAlignment = .Center
         label.numberOfLines = 0
-        label.font =  UIFont(name: "CardenioModern-Bold", size: 61.0)
         label.textColor = UIColor.blackColor()
         addSubview(label)
         superview?.alpha = 0.00

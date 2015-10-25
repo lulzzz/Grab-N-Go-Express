@@ -18,6 +18,8 @@ struct Registration
     var phoneNumber: String
     var passcode: String
     var exp_date: String
+    var expMonth: String
+    var expYear: String
     
     init()
     {
@@ -29,5 +31,7 @@ struct Registration
         phoneNumber = ""
         passcode = ""
         exp_date = ""
+        expMonth = ""
+        expYear = ""
     }
 }

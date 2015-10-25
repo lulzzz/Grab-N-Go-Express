@@ -12,13 +12,17 @@ class SingleInputControl: UIView, KeypadControlDelegate{
 
     var instructions = ""
     let textInput: UITextField = UITextField()
+    
     var label: UILabel = UILabel()
+    var keypadControl: KeypadControl!
+    var hatchedBackgroundView: UIImageView!
     
     override init (frame : CGRect) {
                 
         super.init(frame : frame)
         
         let keypadControl: KeypadControl = KeypadControl(frame: CGRect(x: 0, y: 113+22+115, width: frame.width, height: frame.height-113-22-115))
+        self.keypadControl = keypadControl
         keypadControl.delegate = self
         addSubview(keypadControl)
         
@@ -31,6 +35,7 @@ class SingleInputControl: UIView, KeypadControlDelegate{
         let textInputRect: CGRect = CGRect(x: frame.width/2-339/2, y: 200-115-22+22+22, width: 339, height: 115)
         addSubview(hatchedBackgroundView)
         hatchedBackgroundView.frame = textInputRect
+        self.hatchedBackgroundView = hatchedBackgroundView
         
         let font = "Archer-Bold"
         let fontSize: CGFloat = 36.0

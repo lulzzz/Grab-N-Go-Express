@@ -15,8 +15,13 @@ import UIKit
 
 class KeypadControl : UIView
 {
-    let keypadControlWidth: CGFloat = 22*4+90*3
-    let keypadControlHeight: CGFloat = 22*5+90*4
+
+    
+    var buttonWidth: CGFloat = 70;
+    let buttonSpacing: CGFloat = 22;
+
+    var keypadControlWidth: CGFloat = 22*4+50*3
+    var keypadControlHeight: CGFloat = 22*5+50*4
     
     enum keyboardType{
         case Keypad
@@ -30,12 +35,22 @@ class KeypadControl : UIView
     override init (frame : CGRect) {
         super.init(frame : frame)
 
+        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        {
+            buttonWidth = 90
+        }
+        else
+        {
+            buttonWidth = 50
+        }
+        
+        keypadControlWidth = 22*4+buttonWidth*3
+        keypadControlHeight = 22*5+buttonWidth*4
+        
         createControl()
     }
     
-    convenience init () {
-        self.init(frame:CGRect(x: 0, y: 0, width: 22*4+90*3, height: 22*5+90*4))
-    }
+    
     
     required init(coder aDecoder: NSCoder) {
         fatalError("This class does not support NSCoding")
@@ -54,6 +69,18 @@ class KeypadControl : UIView
     {
         // Create my buttons
         self.backgroundColor = UIColorFromRGB(0xbbddec)
+        
+        //let screenSize: CGRect = UIScreen.mainScreen().bounds
+        
+        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        {
+            //self.frame = CGRect(x: 0, y: 0, width: 22*4+90*3, height: 22*5+90*4))
+        }
+        else
+        {
+            //self.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
+        }
+        
         if(inputType == .Keypad)
         {
             createKeypadDigits()
@@ -66,8 +93,6 @@ class KeypadControl : UIView
     
     func createKeypadDigits()
     {
-        let buttonWidth: CGFloat = 90;
-        let buttonSpacing: CGFloat = 22;
         createKeypadDigit("1", digitPressed: "digitPressed:", xPos: buttonSpacing, yPos: buttonSpacing)
         createKeypadDigit("2", digitPressed: "digitPressed:", xPos: buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing)
         createKeypadDigit("3", digitPressed: "digitPressed:", xPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing)
@@ -82,27 +107,50 @@ class KeypadControl : UIView
         
         createKeypadDigit("0", digitPressed: "digitPressed:", xPos: buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
         
-        createClearDigit("Clear", digitPressed: "clearPressed:", xPos: buttonSpacing+90+22, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
+        createClearDigit("Clear", digitPressed: "clearPressed:", xPos: buttonSpacing+buttonWidth+22, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
         
     }
     
     func createKeypadDigit(digit: String, digitPressed: Selector, xPos: CGFloat, yPos: CGFloat)
     {
-        let button = UIButton(type: UIButtonType.Custom) as UIButton
-        button.frame = CGRectMake(xPos, yPos, 90, 90)
-        button.setBackgroundImage("keypad_button_background.png")
-        button.setTitle(digit, forState: UIControlState.Normal)
-        button.setTitleColor(UIColor.blackColor(), forState: .Normal)
+        //let button = UIButton(type: UIButtonType.Custom) as UIButton
+        //UIButton(type: UIButtonType.System) as UIButton
+        let button = UIButton(type: UIButtonType.System) as UIButton
+        button.frame = CGRectMake(xPos, yPos, buttonWidth, buttonWidth)
+        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        {
+        button.setBackgroundImage("keypad_button_background3.png")
         button.titleLabel!.font = UIFont(name: "Arial", size: 58.0)
-        button.addTarget(self, action: digitPressed, forControlEvents: UIControlEvents.TouchUpInside)
+        }
+        else
+        {
+        button.setBackgroundImage("keypad_button_background@1x.png")
+        button.titleLabel!.font = UIFont(name: "Arial", size: 28.0)
+            button.backgroundColor = UIColor.blueColor()
+        }
+        
+        button.setTitle(digit, forState: UIControlState.Normal)
+        button.setTitleColor(UIColor.blueColor(), forState: .Normal)
+        
+        
+        button.addTarget(self, action: digitPressed, forControlEvents: UIControlEvents.TouchDown)
         addSubview(button)
     }
     
     func createClearDigit(digit: String, digitPressed: Selector, xPos: CGFloat, yPos: CGFloat)
     {
         let button = UIButton(type: UIButtonType.Custom) as UIButton
-        button.frame = CGRectMake(xPos, yPos, 199, 90)
-        button.setBackgroundImage("enterkey_button_background.png")
+        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        {
+        button.frame = CGRectMake(xPos, yPos, buttonWidth*2+buttonSpacing, buttonWidth)
+            button.setBackgroundImage("enterkey_button_background.png")
+        }
+        else
+        {
+        button.frame = CGRectMake(xPos, yPos, buttonWidth*2+buttonSpacing, buttonWidth)
+            button.backgroundColor = UIColor.blueColor()
+        }
+        
         button.setTitle(digit, forState: UIControlState.Normal)
         button.setTitleColor(UIColor.blackColor(), forState: .Normal)
         button.titleLabel!.font = UIFont(name: "Arial", size: 40.0)

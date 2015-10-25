@@ -81,6 +81,7 @@ class ApiRequestController: JsonRequestController {
         errorDescriptions[401] = "No Action Identifier in Json";
         errorDescriptions[610] = "No Token Hex Provided in Json";
         errorDescriptions[611] = "Unable to Charge Credit Card";
+        errorDescriptions[1000] = "No First Name Provided";
         
         
         // Do any additional setup after loading the view.
@@ -92,9 +93,15 @@ class ApiRequestController: JsonRequestController {
         let error: NSNumber = jsonData["Error"].number!
         let errorInt: Int = error.integerValue
         var alertText = errorDescriptions[errorInt]
+        print("------")
+        print(jsonData["error_message"].string)
         if let error_message = jsonData["error_message"].string
         {
             alertText = error_message
+        }
+        else
+        {
+            
         }
         
         let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: alertText!)

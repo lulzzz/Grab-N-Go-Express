@@ -43,7 +43,7 @@
 		8E8E07A81BD91A3700A80FF8 /* enterkey_button_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E07991BD91A3700A80FF8 /* enterkey_button_background.png */; settings = {ASSET_TAGS = (); }; };
 		8E8E07A91BD91A3700A80FF8 /* green_apple.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E079A1BD91A3700A80FF8 /* green_apple.png */; settings = {ASSET_TAGS = (); }; };
 		8E8E07AA1BD91A3700A80FF8 /* hatched_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E079B1BD91A3700A80FF8 /* hatched_background.png */; settings = {ASSET_TAGS = (); }; };
-		8E8E07AB1BD91A3700A80FF8 /* keypad_button_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E079C1BD91A3700A80FF8 /* keypad_button_background.png */; settings = {ASSET_TAGS = (); }; };
+		8E8E07AB1BD91A3700A80FF8 /* keypad_button_background3.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E079C1BD91A3700A80FF8 /* keypad_button_background3.png */; settings = {ASSET_TAGS = (); }; };
 		8E8E07AC1BD91A3700A80FF8 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E079D1BD91A3700A80FF8 /* logo.png */; settings = {ASSET_TAGS = (); }; };
 		8E8E07AE1BD91AAC00A80FF8 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E8E07AD1BD91AAC00A80FF8 /* ExternalAccessory.framework */; };
 		8E8E07B81BD91B5D00A80FF8 /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8E07B01BD91B5D00A80FF8 /* AdminView.swift */; settings = {ASSET_TAGS = (); }; };
@@ -67,6 +67,10 @@
 		8E8E07D91BD91DC600A80FF8 /* CardenioModern-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E07CE1BD91DC600A80FF8 /* CardenioModern-Bold.ttf */; settings = {ASSET_TAGS = (); }; };
 		8E8E07DA1BD91DC600A80FF8 /* CardenioModern-Reg.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E07CF1BD91DC600A80FF8 /* CardenioModern-Reg.ttf */; settings = {ASSET_TAGS = (); }; };
 		8E8E07DD1BD9540600A80FF8 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8E07DC1BD9540600A80FF8 /* SwiftyJSON.swift */; settings = {ASSET_TAGS = (); }; };
+		8E8E07E91BDBBD8D00A80FF8 /* _loginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8E07E81BDBBD8D00A80FF8 /* _loginView.swift */; settings = {ASSET_TAGS = (); }; };
+		8E8E07EB1BDBC59400A80FF8 /* background_button_@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E07EA1BDBC59400A80FF8 /* background_button_@1x.png */; settings = {ASSET_TAGS = (); }; };
+		8E8E07ED1BDBF84D00A80FF8 /* background_button_@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E07EC1BDBF84D00A80FF8 /* background_button_@1x.png */; settings = {ASSET_TAGS = (); }; };
+		8E8E07EF1BDBF89500A80FF8 /* keypad_button_background@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8E07EE1BDBF89500A80FF8 /* keypad_button_background@1x.png */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -109,7 +113,7 @@
 		8E8E07991BD91A3700A80FF8 /* enterkey_button_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = enterkey_button_background.png; sourceTree = "<group>"; };
 		8E8E079A1BD91A3700A80FF8 /* green_apple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = green_apple.png; sourceTree = "<group>"; };
 		8E8E079B1BD91A3700A80FF8 /* hatched_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hatched_background.png; sourceTree = "<group>"; };
-		8E8E079C1BD91A3700A80FF8 /* keypad_button_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = keypad_button_background.png; sourceTree = "<group>"; };
+		8E8E079C1BD91A3700A80FF8 /* keypad_button_background3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = keypad_button_background3.png; sourceTree = "<group>"; };
 		8E8E079D1BD91A3700A80FF8 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		8E8E07AD1BD91AAC00A80FF8 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		8E8E07B01BD91B5D00A80FF8 /* AdminView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
@@ -133,6 +137,10 @@
 		8E8E07CE1BD91DC600A80FF8 /* CardenioModern-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CardenioModern-Bold.ttf"; sourceTree = "<group>"; };
 		8E8E07CF1BD91DC600A80FF8 /* CardenioModern-Reg.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CardenioModern-Reg.ttf"; sourceTree = "<group>"; };
 		8E8E07DC1BD9540600A80FF8 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
+		8E8E07E81BDBBD8D00A80FF8 /* _loginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _loginView.swift; sourceTree = "<group>"; };
+		8E8E07EA1BDBC59400A80FF8 /* background_button_@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background_button_@1x.png"; sourceTree = "<group>"; };
+		8E8E07EC1BDBF84D00A80FF8 /* background_button_@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background_button_@1x.png"; sourceTree = "<group>"; };
+		8E8E07EE1BDBF89500A80FF8 /* keypad_button_background@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "keypad_button_background@1x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -245,8 +253,10 @@
 		8E8E07911BD91A3700A80FF8 /* Backgrounds */ = {
 			isa = PBXGroup;
 			children = (
+				8E8E07EC1BDBF84D00A80FF8 /* background_button_@1x.png */,
 				8E8E07921BD91A3700A80FF8 /* arrow.png */,
 				8E8E07931BD91A3700A80FF8 /* background_blue.png */,
+				8E8E07EA1BDBC59400A80FF8 /* background_button_@1x.png */,
 				8E8E07941BD91A3700A80FF8 /* background_button.png */,
 				8E8E07951BD91A3700A80FF8 /* background_green.png */,
 				8E8E07961BD91A3700A80FF8 /* background_pattern.png */,
@@ -255,7 +265,8 @@
 				8E8E07991BD91A3700A80FF8 /* enterkey_button_background.png */,
 				8E8E079A1BD91A3700A80FF8 /* green_apple.png */,
 				8E8E079B1BD91A3700A80FF8 /* hatched_background.png */,
-				8E8E079C1BD91A3700A80FF8 /* keypad_button_background.png */,
+				8E8E079C1BD91A3700A80FF8 /* keypad_button_background3.png */,
+				8E8E07EE1BDBF89500A80FF8 /* keypad_button_background@1x.png */,
 				8E8E079D1BD91A3700A80FF8 /* logo.png */,
 			);
 			path = Backgrounds;
@@ -285,10 +296,13 @@
 		8E8E07AF1BD91B5D00A80FF8 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				8E8E07B31BD91B5D00A80FF8 /* LoginView.swift */,
+				8E8E07E61BDBB92200A80FF8 /* iPad */,
+				8E8E07E51BDBB91400A80FF8 /* iPhone */,
+				8E8E07E71BDBB93000A80FF8 /* Universal */,
 				8E8E07B01BD91B5D00A80FF8 /* AdminView.swift */,
 				8E8E07B11BD91B5D00A80FF8 /* CancelledTransactionView.swift */,
 				8E8E07B21BD91B5D00A80FF8 /* ConfigurationView.swift */,
-				8E8E07B31BD91B5D00A80FF8 /* LoginView.swift */,
 				8E8E07B41BD91B5D00A80FF8 /* NavigationView.swift */,
 				8E8E07B51BD91B5D00A80FF8 /* RegisterView.swift */,
 				8E8E07B61BD91B5D00A80FF8 /* SelfCheckoutView.swift */,
@@ -323,6 +337,28 @@
 			name = Libraries;
 			sourceTree = "<group>";
 		};
+		8E8E07E51BDBB91400A80FF8 /* iPhone */ = {
+			isa = PBXGroup;
+			children = (
+				8E8E07E81BDBBD8D00A80FF8 /* _loginView.swift */,
+			);
+			name = iPhone;
+			sourceTree = "<group>";
+		};
+		8E8E07E61BDBB92200A80FF8 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = iPad;
+			sourceTree = "<group>";
+		};
+		8E8E07E71BDBB93000A80FF8 /* Universal */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Universal;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -355,6 +391,7 @@
 				TargetAttributes = {
 					8E1C1DE01BD918F9008841B3 = {
 						CreatedOnToolsVersion = 7.0.1;
+						DevelopmentTeam = V4HB2666FZ;
 					};
 				};
 			};
@@ -381,13 +418,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E8E07AB1BD91A3700A80FF8 /* keypad_button_background.png in Resources */,
+				8E8E07AB1BD91A3700A80FF8 /* keypad_button_background3.png in Resources */,
 				8E8E07AC1BD91A3700A80FF8 /* logo.png in Resources */,
 				8E8E07A41BD91A3700A80FF8 /* background_green.png in Resources */,
 				8E1C1DF21BD918F9008841B3 /* LaunchScreen.storyboard in Resources */,
 				8E8E07A71BD91A3700A80FF8 /* background_selfcheckout.png in Resources */,
 				8E8E07A31BD91A3700A80FF8 /* background_button.png in Resources */,
 				8E8E07A11BD91A3700A80FF8 /* arrow.png in Resources */,
+				8E8E07ED1BDBF84D00A80FF8 /* background_button_@1x.png in Resources */,
 				8E8E07D21BD91DC600A80FF8 /* Archer-BoldItalic2.ttf in Resources */,
 				8E8E07D71BD91DC600A80FF8 /* Archer-MediumItalic.ttf in Resources */,
 				8E8E07A21BD91A3700A80FF8 /* background_blue.png in Resources */,
@@ -403,10 +441,12 @@
 				8E8E07A91BD91A3700A80FF8 /* green_apple.png in Resources */,
 				8E8E07D01BD91DC600A80FF8 /* Archer-Bold.ttf in Resources */,
 				8E8E07D91BD91DC600A80FF8 /* CardenioModern-Bold.ttf in Resources */,
+				8E8E07EB1BDBC59400A80FF8 /* background_button_@1x.png in Resources */,
 				8E8E07D61BD91DC600A80FF8 /* Archer-Medium1.ttf in Resources */,
 				8E8E07A51BD91A3700A80FF8 /* background_pattern.png in Resources */,
 				8E8E07D81BD91DC600A80FF8 /* Archer-MediumItalic2.ttf in Resources */,
 				8E8E07DA1BD91DC600A80FF8 /* CardenioModern-Reg.ttf in Resources */,
+				8E8E07EF1BDBF89500A80FF8 /* keypad_button_background@1x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,6 +485,7 @@
 				8E8E07BE1BD91B5D00A80FF8 /* SelfCheckoutView.swift in Sources */,
 				8E8E07BB1BD91B5D00A80FF8 /* LoginView.swift in Sources */,
 				8E1C1DED1BD918F9008841B3 /* Grab_n_Go_Express.xcdatamodeld in Sources */,
+				8E8E07E91BDBBD8D00A80FF8 /* _loginView.swift in Sources */,
 				8E8E077D1BD919A900A80FF8 /* SingleInputControl.swift in Sources */,
 				8E8E07861BD919CB00A80FF8 /* Products.swift in Sources */,
 				8E8E07151BD9199200A80FF8 /* UIController.swift in Sources */,
@@ -554,8 +595,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "Grab n Go Express/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -563,6 +607,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Atom-Creative.Grab-n-Go-Express";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Grab n Go Express/Grab n Go Express-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -573,8 +618,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "Grab n Go Express/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -582,6 +630,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "Atom-Creative.Grab-n-Go-Express";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Grab n Go Express/Grab n Go Express-Bridging-Header.h";
 			};
 			name = Release;

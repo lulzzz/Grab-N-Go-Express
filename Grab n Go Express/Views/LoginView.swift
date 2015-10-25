@@ -57,6 +57,16 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
     override func viewDidAppear(animated: Bool) {
         
+        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        {
+            print("Pad")
+        }
+        else
+        {
+            print("Phone")
+            //keypadControl.frame = CGRect(x: self.frame.width/2-keypadControl.keypadControlWidth/2, y: 200, width: keypadControl.keypadControlWidth, height: keypadControl.keypadControlHeight)
+        }
+        
         let defaults = NSUserDefaults.standardUserDefaults()
         //defaults.setObject(locationSerial.text, forKey: "location_serial")
         //defaults.setObject(locationUsername.text, forKey: "location_username")
@@ -120,6 +130,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
 
         phoneNumberControl.delegate = self
         phoneNumberControl.hidden = true
+        phoneNumberControl.textInput.keyboardType = .NumberPad
         view.addSubview(phoneNumberControl)
         
         passcodeControl.delegate = self
@@ -141,16 +152,17 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         case .Anonymous:
             loginStatus = .ObtainingPhoneNumber
             animatedHideAnonymousState()
-            //print("Anonymous")
+            print("Anonymous")
             break
             
         case .ObtainingPhoneNumber:
             loginStatus = .ObtainingPinNumberState
-            //print("ObtainingPhoneNumber")
+            print("ObtainingPhoneNumber")
             break
             
         case .ObtainingPinNumberState:
             loginStatus = .VerifyingCredentials
+            print("ObtainingPasscode")
             break
         
         case .VerifyingCredentials:
@@ -206,6 +218,8 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         }
     }
     
+
+    
     func resetScreen()
     {
         loginStatus = .Anonymous
@@ -220,9 +234,6 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         print("Reset screen");
         print(user.phoneNumber)
         
-        
-        //animatedRegistrationProcess.animateOut()
-        
         UIView.animateWithDuration(0.5, delay: 0.4,
             options: .CurveEaseOut, animations: {
                 self.loginButton.frame.origin.x = self.loginButtonOriginalX
@@ -232,6 +243,8 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
             options: .CurveEaseOut, animations: {
                 self.signupButton.frame.origin.x = self.signupButtonOriginalX
                 self.logoView.frame = self.logoOriginalFrame
+                self.logoView.alpha = 1.0
+                
                 self.transparentApple.alpha = 1.0
                 self.noAccountLabel.alpha = 1.0
                 self.arrowView.alpha = 1.0
@@ -453,8 +466,9 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
     override func registrationConfirmed(jsonData: JSON) {
         
+        print("registrationConfirmed")
         let error = jsonData["Error"]
-        
+        print(jsonData)
         switch(error)
         {
         case 0:
@@ -466,24 +480,42 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
                 errorAlertView.cancelButton.hidden = true
                 errorAlertView.centerOKButtonAnimated()
                 self.view.addSubview(errorAlertView)
-                self.loginRequest(user)
+                //self.loginRequest(user)
             })
             
             break
             
-        //case 610:
-        //    dispatch_async(dispatch_get_main_queue(), {
-        //        self.registrationErrorInvalidCCV()
-        //        })
-        //    break
+        case 610:
+            dispatch_async(dispatch_get_main_queue(), {
+                self.registrationErrorInvalidCCV()
+                })
+            break
             
         default:
             dispatch_async(dispatch_get_main_queue(), {
-                self.resetScreen()
                 self.processErrors(jsonData)
+                //self.registrationErrorInvalidCCV()
             })
             break
         }
+    }
+    
+    override func processErrors(jsonData: JSON) {
+
+        animatedRegistrationProcess.animateOut()
+        super.processErrors(jsonData)
+        
+        /*
+        let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "The CCV code doesn't match, please re-enter")
+        errorAlertView.delegate = self
+        view.addSubview(errorAlertView)
+        backgroundImageView.alpha = 0.50
+        errorAlertView.okButton.setTitle("Re-Enter", forState: .Normal)
+        errorAlertView.cancelButton.setTitle("Cancel", forState: .Normal)
+        errorAlertView.okButton.removeTarget(nil, action: nil, forControlEvents: .AllEvents)
+        errorAlertView.okButton.addTarget(self, action: "retryCCV", forControlEvents: UIControlEvents.TouchDown)
+        myAlert = errorAlertView
+        */
     }
     
     func registrationError(jsonData: NSString) {
@@ -565,6 +597,8 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         registerUserWizard()
         registerUserView.registration = tempRegistration
         registerUserView.currentState = RegisterUserControl.registrationState.zipCodeEntered
+        // creditCardSwiped
+        //registerUserView.currentState = RegisterUserControl.registrationState.creditCardSwiped
         registerUserView.bResizeFrame = true
         registerUserView.label.text = registerUserView.getNextStateText()
         myAlert.ok()
@@ -592,31 +626,21 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     }
     
     override func timeout() {
+
+        //if(bIsRegistering==true)
+        //{
+            animatedRegistrationProcess.animateOut()
+        //}
         
-        dispatch_async(dispatch_get_main_queue(), {
-            
-            self.resetScreen()
-        //self.registrationErrorInvalidCCV()
-        print("timeout")
-            
-        if(self.bIsRegistering==true)
-        {
-        self.animatedRegistrationProcess.animateOut()
-        }
-        //self.registrationErrorInvalidCCV()
-        
+        resetScreen()
         let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "Unable to connect to the Internet.  Please call your service provider.  I am unable to continue")
         errorAlertView.delegate = self
         self.view.addSubview(errorAlertView)
-        //self.backgroundImageView.alpha = 0.50
         errorAlertView.okButton.setTitle("Retry", forState: .Normal)
         errorAlertView.centerCancelButtonAnimated()
-        //errorAlertView.cancelButton.setTitle("Cancel", forState: .Normal)
         errorAlertView.okButton.removeTarget(nil, action: nil, forControlEvents: .AllEvents)
         errorAlertView.okButton.addTarget(self, action: "retryInternetDown", forControlEvents: UIControlEvents.TouchDown)
         self.myAlert = errorAlertView
-        
-            })
     }
     
     func retryInternetDown(){
