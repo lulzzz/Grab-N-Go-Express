@@ -40,6 +40,16 @@ class PasscodeControl : SingleInputControl
     
     override func keypadDigitPressed(digitPressed: String) {
         // A keypad digit was pressed, update the text field!
+        
+        let  char = digitPressed.cStringUsingEncoding(NSUTF8StringEncoding)!
+        let isBackSpace = strcmp(char, "\\b")
+        
+        if (isBackSpace == -92) {
+            passcode = ""
+            textInput.text = ""
+            return
+        }
+        
         textInput.text = formatAsPasscode(textInput.text! + "*")
         passcode += digitPressed
         if(textInput.text!.characters.count == 8)

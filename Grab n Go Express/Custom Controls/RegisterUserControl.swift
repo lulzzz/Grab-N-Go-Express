@@ -14,6 +14,7 @@ import UIKit
     func registrationCompleted()
 }
 
+
 class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     var delegate: RegisterUserControlDelegate?
@@ -44,7 +45,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     var justStartedText: String = "Registration is quick and easy\nIt takes less than a minute"
     let zipcodeText = "What is your billing zip code?"
     let creditCardSwipedText = "Swipe Your Credit Card"
-    let ccvText = "Finally, please enter the\nCCV code on the back of your card"
+    let ccvText = "Please enter the CCV code"
     
     var registration: Registration!
     
@@ -201,8 +202,8 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                 }, completion: nil)
             label.text = rVal
 
-            var timer = NSTimer()
-            timer = NSTimer.scheduledTimerWithTimeInterval(5, target:self, selector: Selector("testCardSwipe"), userInfo: nil, repeats: false)
+            //var timer = NSTimer()
+            //timer = NSTimer.scheduledTimerWithTimeInterval(5, target:self, selector: Selector("testCardSwipe"), userInfo: nil, repeats: false)
             
             break
         
@@ -238,6 +239,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
               self.setFrameE()
               rVal = ccvText
               self.label.text = rVal
+              // 3039031874 2222
               break;
             
         case .ccvEntered:
@@ -302,10 +304,6 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             
         keypadControl.frame = CGRect(x: self.frame.width/2-keypadControl.keypadControlWidth/2, y: label.frame.height+label.frame.origin.y, width: keypadControl.keypadControlWidth, height: keypadControl.keypadControlHeight)
 
-            //print(frame)
-            //print(keypadControl.frame)
-            //print(keypadControl.keypadControlWidth)
-            //print(keypadControl.keypadControlHeight)
         }
     }
     
@@ -515,6 +513,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     func magneticCardData(track1: String!, track2: String!, track3: String!) {
         
+        
         if let temp = track1
         {
 
@@ -540,6 +539,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                 }
                 ++indexOfSecondCaret
             }
+
             let expirationDateIndex = indexOfStartSentinal?.advancedBy(indexOfSecondCaret-1)
             let expirationDateEndIndex = expirationDateIndex?.advancedBy(4)
         
@@ -575,6 +575,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             label.text  = self.getNextStateText()
             
         }
+        
     }
     
     func keypadClear()

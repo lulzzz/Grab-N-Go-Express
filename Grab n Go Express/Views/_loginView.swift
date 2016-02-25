@@ -10,6 +10,8 @@ import UIKit
 
 class loginView: LoginView, UITextFieldDelegate {
 
+    var selfCheckout: _selfCheckoutView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -63,11 +65,41 @@ class loginView: LoginView, UITextFieldDelegate {
         passcodeControl.textInput.keyboardType = .NumberPad
         passcodeControl.label.frame = CGRect(x: 0, y: 25, width: rightX, height: 115)
         passcodeControl.textInput.delegate = self
+        
+        let defaults = NSUserDefaults.standardUserDefaults()
+        
+        if let phone_number = defaults.stringForKey("phone_number")
+        {
+            if let passcode = defaults.stringForKey("passcode")
+            {
+                //let user: User = User()
+                //user.phoneNumber = phone_number
+                //user.passcode = passcode
+
+                //loginRequest(user)
+            }
+        }
+        
+        
     }
+    
     
     override func login() {
         super.login();
+        
         phoneNumberControl.textInput.becomeFirstResponder()
+        
+        /*
+        let inventoryView = _inventoryViewViewController()
+        inventoryView.setBaseParameters(user)
+        user.userAuthenticated(phoneNumber, passcode: user.passcode)
+        user.balance = user.balance
+        user.accountOperator = user.accountOperator
+        inventoryView.view.backgroundColor = UIColor.whiteColor()
+        inventoryView.login(user)
+        inventoryView.user = user
+        self.presentViewController(inventoryView, animated: true, completion: nil)
+        */
     }
     
     override func signup() {
@@ -79,6 +111,42 @@ class loginView: LoginView, UITextFieldDelegate {
         super.passcodeCompletion(passcode)
         passcodeControl.textInput.endEditing(true)
         phoneNumberControl.textInput.endEditing(true)
+    }
+
+    
+    override func loginResult(jsonData: JSON)
+    {
+        let error = jsonData["Error"]
+        if(error == 0)
+        {
+            selfCheckout = _selfCheckoutView()
+            selfCheckout.setBaseParameters(user)
+            user.userAuthenticated(phoneNumber, passcode: user.passcode)
+            user.balance = Double(jsonData["Balance"].double!);
+            user.accountOperator = jsonData["Operator"].string!
+            
+            selfCheckout.view.backgroundColor = UIColor.whiteColor()
+            selfCheckout.login(user)
+            selfCheckout.user = user
+
+            let defaults = NSUserDefaults.standardUserDefaults()
+            defaults.setObject(user.phoneNumber, forKey: "phone_number")
+            defaults.setObject(user.passcode, forKey: "passcode")
+            
+            print("Current Device")
+            
+            self.presentViewController(selfCheckout, animated: true, completion: nil)
+            
+        }
+        else
+        {
+            //let defaults = NSUserDefaults.standardUserDefaults()
+            //defaults.removeObjectForKey("phone_number")
+            //defaults.removeObjectForKey("passcode")
+            
+            resetScreen()
+            processErrors(jsonData)
+        }
     }
     
     override func advanceState()
@@ -143,7 +211,7 @@ class loginView: LoginView, UITextFieldDelegate {
     }
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-        
+       
         if(phoneNumberControl.textInput.isFirstResponder() == true)
         {
             phoneNumberControl.keypadDigitPressed(string)
@@ -152,7 +220,6 @@ class loginView: LoginView, UITextFieldDelegate {
         if(passcodeControl.textInput.isFirstResponder())
         {
             passcodeControl.keypadDigitPressed(string)
-            print(string)
         }
         
         return false

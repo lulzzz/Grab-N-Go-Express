@@ -99,7 +99,6 @@ label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
     {
         self.init(frame: CGRect.zero)
         label.text = errorText
-        print(errorText)
     }
     
     func centerCancelButtonAnimated()

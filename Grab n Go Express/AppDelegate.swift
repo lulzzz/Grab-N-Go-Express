@@ -41,7 +41,7 @@ class AppDelegate2: UIResponder, UIApplicationDelegate {
         {
             return deviceType.iPhone
         }
-        
+        /*
         var systemInfo = utsname()
         uname(&systemInfo)
         let machineMirror = Mirror(reflecting: systemInfo.machine)
@@ -76,6 +76,7 @@ class AppDelegate2: UIResponder, UIApplicationDelegate {
         case "i386", "x86_64":                          return deviceType.iPhone
         default:                                        return deviceType.iPhone
         }
+        */
     }
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {

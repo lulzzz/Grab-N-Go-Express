@@ -8,3 +8,12 @@
 
 import Foundation
 
+class Location {
+    var location_identifier: String = ""
+    var usat_username: String = ""
+    var usat_password: String = ""
+    var usat_serial: String = ""
+    var location_name: String = ""
+    var location_taxRate: Double = 0.00
+    
+}

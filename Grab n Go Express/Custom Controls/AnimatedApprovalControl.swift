@@ -18,6 +18,9 @@ class AnimatedApprovalControl: UIView {
     }
     */
 
+    var progressView: UIProgressView?
+    var progressLabel: UILabel?
+    
     var registration: Registration = Registration()
     
     var first_nameLabel = UILabel(frame: CGRect(x: 65, y: 65, width: 150, height: 165))
@@ -51,12 +54,31 @@ class AnimatedApprovalControl: UIView {
         //layer.addSublayer(ovalShapeLayer)
         
         hidden = true
-        completing_registrationLabel.text = "Completing Registration"
+        completing_registrationLabel.text = "Completing Registrations"
         completing_registrationLabel.frame = CGRect(x: 0, y: 0,
             width: frame.width,
             height: frame.height)
         completing_registrationLabel.textAlignment = .Center
-        addSubview(completing_registrationLabel)
+        //addSubview(completing_registrationLabel)
+        
+        progressView = UIProgressView(progressViewStyle: UIProgressViewStyle.Default)
+        progressView?.frame = CGRectMake(25, frame.height - 100, frame.width-50, 100)
+        addSubview(progressView!)
+        
+        // Add Label
+        progressLabel = UILabel()
+        let frame = CGRectMake(center.x - 25, frame.height - 50, frame.width-50, 50)
+        progressLabel?.frame = frame
+        //addSubview(progressLabel!)
+        
+        NSTimer.scheduledTimerWithTimeInterval(0.10, target: self, selector: "updateProgress", userInfo: nil, repeats: true)
+        
+    }
+    
+    func updateProgress() {
+        progressView?.progress += 0.01
+        let progressValue = self.progressView?.progress
+        progressLabel?.text = "\(progressValue! * 100) %"
     }
     
     var progress: CGFloat {
@@ -90,6 +112,8 @@ class AnimatedApprovalControl: UIView {
         zipcodeLabel.font =  UIFont(name: "CardenioModern-Bold", size: 48.0)
         ccvLabel.font =  UIFont(name: "CardenioModern-Bold", size: 48.0)
         cc_infoLabel.font =  UIFont(name: "CardenioModern-Bold", size: 48.0)
+        
+        
     }
     
     required init(coder aDecoder: NSCoder) {
@@ -133,7 +157,9 @@ class AnimatedApprovalControl: UIView {
     {
         let top: CGFloat = 130
         
-        first_nameLabel.text = "Thanks, " + registration.first_name + "\n\nIt'll just be a moment while we complete your registration"
+        //first_nameLabel.text = "Thanks, " + registration.first_name + "\n\nIt'll just be a moment while we complete your registration"
+        first_nameLabel.text = "Completing Registration"
+        first_nameLabel.textAlignment = .Center
         last_nameLabel.text = registration.last_name
         cc_infoLabel.text = "Card Info: " + registration.cc_info
         zipcodeLabel.text = "Zipcode: " + registration.zipcode
@@ -141,7 +167,7 @@ class AnimatedApprovalControl: UIView {
         phoneNumberLabel.text = "Phone Number: " + registration.phoneNumber
         passcodeLabel.text = "Passcode: " + registration.passcode
 
-        first_nameLabel.frame = CGRect(x: 65, y: top, width: frame.width-65, height: 265)
+        first_nameLabel.frame = CGRect(x: 0, y: 0, width: frame.width, height: 265)
         last_nameLabel.frame = CGRect(x: 225, y: top, width: 225, height: 65)
         phoneNumberLabel.frame = CGRect(x: 65, y: top*2, width: frame.width, height: 65)
         passcodeLabel.frame = CGRect(x: 65, y: top*3, width: frame.width, height: 65)
@@ -164,7 +190,7 @@ class AnimatedApprovalControl: UIView {
     
     func wobbleLeft() {
         
-        var path = UIBezierPath(ovalInRect: CGRect(x: frame.size.width/2 - 100,
+        _ = UIBezierPath(ovalInRect: CGRect(x: frame.size.width/2 - 100,
             y: frame.size.height/2 - 100,
             width: 0,
             height: 0)).CGPath
@@ -190,7 +216,7 @@ class AnimatedApprovalControl: UIView {
             return
         }
         
-        var path = UIBezierPath(ovalInRect: CGRect(x: frame.size.width/2 - 100,
+       let path = UIBezierPath(ovalInRect: CGRect(x: frame.size.width/2 - 100,
             y: frame.size.height/2 - 100,
             width: 2 * 100,
             height: 2 * 100)).CGPath

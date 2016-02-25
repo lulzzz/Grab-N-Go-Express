@@ -126,7 +126,7 @@ class KeypadControl : UIView
         {
         button.setBackgroundImage("keypad_button_background@1x.png")
         button.titleLabel!.font = UIFont(name: "Arial", size: 28.0)
-            button.backgroundColor = UIColor.blueColor()
+            //button.backgroundColor = UIColor.blueColor()
         }
         
         button.setTitle(digit, forState: UIControlState.Normal)

@@ -14,21 +14,53 @@ import UIKit
 
 class NetworkRequestController: UIElementController {
 
+    //#if DEBUG
+        //var urlResource = "https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Sandbox/2.0/SelfCheckout.php"
+    //#else
+        var urlResource = "https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php"
+    //#endif
     
-    var urlResource = "http://www.atomcreativecorp.com/adamsapps/1.1/adamsapps.php"
     // 166.78.61.142
     // This is going to evolve into a REST Compliant resource, which
     // currently it is not.
     
     var httpBody: String = ""
-    var jsonDataObj: Dictionary = Dictionary<String, String>()
+    //var jsonDataObj: Dictionary = Dictionary<String, AnyObject>()
+    var jsonDataObj = [String : AnyObject]()
+   
+    var networkLoadingView = UILabel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        networkLoadingView.frame  = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 0)
+        networkLoadingView.backgroundColor = UIColor.orangeColor()
+        networkLoadingView.text = "Loading"
+        networkLoadingView.textAlignment = .Center
+        networkLoadingView.hidden = false
+        networkLoadingView.textColor = UIColor.whiteColor()
+        view.addSubview(networkLoadingView)
         // Do any additional setup after loading the view.
     }
 
+    func displayLoading()
+    {
+        view.bringSubviewToFront(networkLoadingView)
+        UIView.animateWithDuration(0.3, delay: 1.0,
+            options: .CurveEaseOut, animations: {
+                self.networkLoadingView.frame = CGRect(x: 0, y: self.view.frame.height-25, width: self.view.frame.width, height: 25)
+            }, completion: nil)
+        
+    }
+    
+    func hideLoading()
+    {
+        UIView.animateWithDuration(0.3, delay: 0.0,
+            options: .CurveEaseOut, animations: {
+                self.networkLoadingView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 0)
+            }, completion: nil)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -40,7 +72,7 @@ class NetworkRequestController: UIElementController {
         self.urlResource = urlResource
     }
 
-    func addParameter(parameter: String, value: String)
+    func addParameter(parameter: String, value: AnyObject)
     {
         jsonDataObj[parameter] = value
     }
@@ -48,6 +80,7 @@ class NetworkRequestController: UIElementController {
     func resetJsonObj()
     {
         jsonDataObj.removeAll()
+    
     }
     
     func networkRequest(completion: (JSON) -> Void)
@@ -57,10 +90,24 @@ class NetworkRequestController: UIElementController {
     
     func networkRequest(completion: (JSON) -> Void, timeout: () -> Void)
     {
-        addParameter("location_upc_identifier", value: "10000000020")
+        
+        //#if DEBUG
+            let locationSerial: String = NSUserDefaults.standardUserDefaults().objectForKey("location_serial") as! String!
+            if locationSerial.isEmpty
+            {
+                print("We're going to have a problem...start the configuration view")
+            }
+            //#else
+            //   let locationSerial: String = "10000000020";
+        
+        //NSUserDefaults.standardUserDefaults().objectForKey("location_serial") as! String!
+        //#endif
+
+        
+        addParameter("location_upc_identifier", value: locationSerial)
         
         let params = jsonDataObj
-
+        //print(params) as! AnyObject
         //let jsonData = try! NSJSONSerialization.dataWithJSONObject(params, options: [])
         let request = NSMutableURLRequest(URL: NSURL(string: urlResource)!)
         
@@ -69,8 +116,11 @@ class NetworkRequestController: UIElementController {
         request.HTTPMethod = "POST"
         request.timeoutInterval = 10
         
+        print(urlResource)
+        
         do {
             request.HTTPBody = try NSJSONSerialization.dataWithJSONObject(params, options: [])
+            print(params)
         } catch {
         }
         
@@ -86,9 +136,12 @@ class NetworkRequestController: UIElementController {
                     
                     
                 } else {
+                    // Should put this in a try catch
                     let json = JSON(data: data!)
                     
                     dispatch_async(dispatch_get_main_queue(), {
+                        self.hideLoading()
+                        print(json)
                         completion(json)
                         
                     })
@@ -97,11 +150,12 @@ class NetworkRequestController: UIElementController {
         })
 
         task.resume()
+        self.displayLoading()
     }
     
     func timeout()
     {
-
+        hideLoading()
     }
     
     func errorExit()

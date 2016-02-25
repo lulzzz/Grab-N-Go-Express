@@ -13,8 +13,14 @@ import UIKit
 
 */
 
+protocol ApiResultsDelegate{
+    func barcodeScanned(product: Product)
+}
+
 class ApiRequestController: JsonRequestController {
 
+    var shoppingCartDelegate:ApiResultsDelegate?
+    
     // URL of our resource
     var _url: String!
     var _endpoint: String!
@@ -61,9 +67,15 @@ class ApiRequestController: JsonRequestController {
     612     Token Registration:   Problem obtaining token
     */
     
+    //var errorDescriptions: Dictionary = Dictionary<Int, String>()
+    //var errorDescriptions = [401: "Toronto Pearson", 402: "Dublin"]
+    var errorDescriptions = [Int: String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+      
+        
         errorDescriptions[401] = "No Action Identifier in Json";
         errorDescriptions[402] = "No Phone Number Provided in Json";
         errorDescriptions[403] = "No Passcode Provided in Json";
@@ -82,7 +94,6 @@ class ApiRequestController: JsonRequestController {
         errorDescriptions[610] = "No Token Hex Provided in Json";
         errorDescriptions[611] = "Unable to Charge Credit Card";
         errorDescriptions[1000] = "No First Name Provided";
-        
         
         // Do any additional setup after loading the view.
     }
@@ -308,10 +319,17 @@ class ApiRequestController: JsonRequestController {
         return bValidCredentials
     }
 
+    func setBaseParameters(user: User)
+    {
+        addParameter("phone_num", value: user.phoneNumber)
+        addParameter("pin_num", value: user.passcode)
+    }
+    
     func loginRequest(user: User) -> Bool
     {
         addParameter("phone_num", value: user.phoneNumber)
         addParameter("pin_num", value: user.passcode)
+        
         addParameter("action", value: "login")
         networkRequest(loginResult)
         return false
@@ -319,7 +337,50 @@ class ApiRequestController: JsonRequestController {
     
     func loginResult(jsonData: JSON)
     {
+        
+        
+    }
+    
+    func itemScanned(product: Product) -> Bool
+    {
+        addParameter("action", value: "item_scanned")
+        addParameter("barcode", value: product.barcode)
+        networkRequest(itemScannedResult)
+        return true
+    }
+    
+    /* This is called after a network request is submitted with the "item_scanned" action set */
+    func itemScannedResult(jsonData: JSON)
+    {
+        let error = jsonData["Error"]
+        switch(error)
+        {
+            case 0:
 
+                let product: Product = Product()
+                product.barcode = jsonData["barcode"].string!
+                product.description = jsonData["item_description"].string!
+                product.price = Double(jsonData["price"].double!)
+                product.tax["Sales Tax"] = Double(jsonData["tax"].double!)
+                shoppingCartDelegate?.barcodeScanned(product)
+            break
+    
+            case 2000:
+                // Error handling here
+                let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: jsonData["Error Description"].string!)
+                errorAlertView.cancelButton.hidden = true
+                errorAlertView.centerOKButtonAnimated()
+                self.view.addSubview(errorAlertView)
+            break
+            
+        default:
+            let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "There was an error.  Try scanning the item again")
+            errorAlertView.cancelButton.hidden = true
+            errorAlertView.centerOKButtonAnimated()
+            self.view.addSubview(errorAlertView)
+            break
+            
+        }
     }
     
     func registerUser(registration: Registration)
@@ -338,14 +399,58 @@ class ApiRequestController: JsonRequestController {
         addParameter("action", value: "register")
 
         networkRequest(registrationConfirmed)
+    }
+    
+    func updateUser(registration: Registration)
+    {
+        resetJsonObj()
+        // For now, set a timer to simulate contacting the network
+        // to complete the registration process
+        addParameter("first_name", value: registration.first_name)
+        addParameter("last_name", value: registration.last_name)
+        addParameter("cc_num", value: registration.cc_info)
+        addParameter("exp_date", value: registration.exp_date)
+        addParameter("ccv", value: registration.ccv)
+        addParameter("pin_num", value: registration.passcode)
+        addParameter("phone_num", value: registration.phoneNumber)
+        addParameter("zipcode", value: registration.zipcode)
+        addParameter("action", value: "update")
         
+        networkRequest(registrationConfirmed)
+    }
+    
+    func completeTransaction(transaction: Transaction)
+    {
+        // The complete transaction function records in the remote
+        // database the transaction that has been completed by the 
+        // front end software.  This is a simple recording action
+        // only.  The backend assumes that the information
+        addParameter("action", value: "transaction")
+        addParameter("transaction", value: transaction.toDictionary())
+        networkRequest(completeTransactionResult)
+    }
+    
+    func completeTransactionResult(jsonStr: JSON)
+    {
+        
+    }
+    
+    func reloadAccount(reloadAmount: Double)
+    {
+        addParameter("action", value: "reload")
+        addParameter("amount", value: reloadAmount)
+        networkRequest(reloadAccountResult)
+    }
+    
+    /* Callback function after network request completes */
+    func reloadAccountResult(jsonStr: JSON)
+    {
         
     }
     
     func registerUserCompleted(jsonStr: String)
     {
-        //var timer = NSTimer()
-        //timer = NSTimer.scheduledTimerWithTimeInterval(5, target:self, selector: Selector("registrationErrorInvalidCCV"), userInfo: nil, repeats: false)
+        
     }
     
     func finishIncompleteRegistration(registration: Registration)
@@ -440,7 +545,7 @@ class ApiRequestController: JsonRequestController {
     612     Token Registration:   Problem obtaining token
     */
     
-    var errorDescriptions: Dictionary = Dictionary<Int, String>()
+    
     
     func noActionIdentifier()
     {

@@ -10,5 +10,6 @@
 #define Header_Bridging_Header_h
 
 #import "DTDevices.h"
+#import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
 
 #endif /* Header_Bridging_Header_h */

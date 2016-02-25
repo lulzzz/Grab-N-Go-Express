@@ -41,8 +41,19 @@ class PhoneNumberControl : SingleInputControl
         fatalError("This class does not support NSCoding")
     }
     
-    override func keypadDigitPressed(digitPressed: String) {
+    override func keypadDigitPressed(var digitPressed: String) {
         // A keypad digit was pressed, update the text field!
+        //var str = string
+        let  char = digitPressed.cStringUsingEncoding(NSUTF8StringEncoding)!
+        let isBackSpace = strcmp(char, "\\b")
+        
+        if (isBackSpace == -92) {
+            phoneNumber = ""
+            textInput.text = ""
+            digitPressed = ""
+            return
+        }
+
         textInput.text = formatAsPhone(textInput.text! + digitPressed)
         phoneNumber += digitPressed
         if(textInput.text!.characters.count == 14)

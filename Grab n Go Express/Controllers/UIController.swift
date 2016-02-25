@@ -8,17 +8,36 @@
 
 import UIKit
 
-class UIController : ApiRequestController, ErrorControlDelegate
+class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
 {
     // This class is responsible for handling the formatting differences
     // between iPads and iPhones
     
+    let kScanditBarcodeScannerAppKey = "C/EsedTPMacbZvmTSgUAIkyMQ/BTXEmgEKPYyj4PfHs";
+    
+    var picker : SBSBarcodePicker = SBSBarcodePicker()
+
     
     // I'm interested in storing the device type to manage the position of elements
     // depending on which device we're on.  This may be unnecessary, I'm still learning
     // about IOS adapative layouts.  But I hate storyboard, so all of my UI is going to
     // be created in code.  This is not the best way of doing this -- it won't play
     // nice with future devices.  More research...
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        SBSLicense.setAppKey(kScanditBarcodeScannerAppKey);
+        picker = SBSBarcodePicker(settings:SBSScanSettings.pre47DefaultSettings())
+        picker.scanDelegate = self;
+        picker.view.hidden = true
+        picker.view.alpha = 0.0
+        view.addSubview(picker.view)
+    }
+    
+    func barcodePicker(picker: SBSBarcodePicker!, didScan session: SBSScanSession!) {
+    
+    }
     
     let screenSize: CGRect = UIScreen.mainScreen().bounds
     
@@ -49,7 +68,7 @@ class UIController : ApiRequestController, ErrorControlDelegate
         {
             return deviceType.iPhone
         }
-        
+        /*
         var systemInfo = utsname()
         uname(&systemInfo)
         let machineMirror = Mirror(reflecting: systemInfo.machine)
@@ -85,6 +104,7 @@ class UIController : ApiRequestController, ErrorControlDelegate
         case "i386", "x86_64":                          return deviceType.simulator
         default:                                        return deviceType.unsupportedDevice
         }
+        */
     }
     
     var backgroundColor: UIColor = UIColor()
@@ -173,6 +193,57 @@ class UIController : ApiRequestController, ErrorControlDelegate
     func addButton(action: Selector, backgroundImage: String)
     {
         
+    }
+    
+    
+    func addButton(backgroundImage: String, action: Selector, text: String, font: String, fontSize: CGFloat,
+        var x: CGFloat,
+        var y: CGFloat,
+        width: CGFloat,
+        height: CGFloat, textColor: UInt) -> UIButton
+    {
+        
+        // If xPos, yPos, etc is ZERO, then we calculate the center for the screen.
+        let screenSize: CGRect = UIScreen.mainScreen().bounds
+        
+        
+        let imageView = UIImageView(frame: CGRectMake(0, 0, width, height)); // set as you want
+        let image = UIImage(named: backgroundImage);
+        imageView.image = image;
+       
+        let button: UIButton = addButton(action)
+        button.setBackgroundImage(imageView.image, forState: .Normal)
+        
+        if(x == 0)
+        {
+            x = screenSize.width/2-imageView.frame.width/2
+            //width = screenSize.width/2-imageView.frame.width/2
+        }
+        
+        if(y == 0)
+        {
+            y = screenSize.height/2-imageView.frame.height/2
+            //height = screenSize.height/2-imageView.frame.height/2
+            
+        }
+        
+        button.frame = CGRect(x: x, y: y, width: width, height: height)
+        // This sets the size of the button to the size of the image
+        
+        if(currentDevice == deviceType.iPad)
+        {
+            button.frame = CGRect(x: x, y: y, width: width, height: height)
+        }
+        
+        button.backgroundColor = UIColor.clearColor()
+        
+        button.titleLabel?.textAlignment = .Center
+        button.setTitle(text, forState: .Normal)
+        button.backgroundColor = UIColor.clearColor()
+        button.titleLabel!.font =  UIFont(name: font, size: fontSize)
+        button.setTitleColor(UIColorFromRGB(textColor), forState: .Normal)
+        button.titleLabel!.textColor = UIColorFromRGB(textColor)
+        return button
     }
     
     func addButton(backgroundImage: String, action: Selector, text: String, font: String, fontSize: CGFloat, var xPos: CGFloat, var yPos: CGFloat, var xPosW: CGFloat, var yPosW: CGFloat, textColor: UInt) -> UIButton
@@ -280,7 +351,7 @@ class UIController : ApiRequestController, ErrorControlDelegate
         return button
     }
     
-    func addStaticImage(imageName: String, var xPos: CGFloat, var yPos: CGFloat, var xPosW: CGFloat, var yPosW: CGFloat, width: CGFloat, height: CGFloat, var widthW: CGFloat, var heightW: CGFloat) -> UIImageView
+    func addStaticImage(imageName: String, var xPos: CGFloat, var yPos: CGFloat, var xPosW: CGFloat, var yPosW: CGFloat, width: CGFloat, height: CGFloat, widthW: CGFloat, heightW: CGFloat) -> UIImageView
     {
         
         if(xPos==0)
@@ -314,10 +385,10 @@ class UIController : ApiRequestController, ErrorControlDelegate
         return imageView
     }
     
-    func addStaticLabel(text: String, font: String, fontSize: CGFloat, var xPos: CGFloat, var yPos: CGFloat, var width: CGFloat, var height: CGFloat, var xPosW: CGFloat, var yPosW: CGFloat, var widthW: CGFloat, var heightW: CGFloat, textColor: UInt) -> UILabel
+    func addStaticLabel(text: String, font: String, fontSize: CGFloat, var xPos: CGFloat, var yPos: CGFloat, width: CGFloat, height: CGFloat, var xPosW: CGFloat, var yPosW: CGFloat, widthW: CGFloat, heightW: CGFloat, textColor: UInt) -> UILabel
         {
             
-            var label = UILabel()
+            let label = UILabel()
             // If xPos, yPos, etc is ZERO, then we calculate the center for the screen.
             let screenSize: CGRect = UIScreen.mainScreen().bounds
             
