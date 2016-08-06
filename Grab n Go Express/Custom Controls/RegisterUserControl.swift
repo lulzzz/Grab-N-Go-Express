@@ -17,6 +17,9 @@ import UIKit
 
 class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
+    
+    var biPad = false;
+    
     var delegate: RegisterUserControlDelegate?
     
     var dtdevices: DTDevices = DTDevices()
@@ -71,7 +74,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         let btnSpacing: CGFloat = 5
         
         // If we're in an iPad
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        if(biPad == true)
         {
             self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
             label.font =  UIFont(name: "CardenioModern-Bold", size: 61.0)
@@ -178,9 +181,9 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         
         if(currentState == .justStarted)
         {
-            if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+            if(biPad == true)
             {
-                
+                currentState = .manualEnterCreditCard
             }
             else
             {
@@ -209,6 +212,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         
         case .creditCardSwiped:
             rVal = zipcodeText
+            bClearTextLabel = true
             label.text = rVal
             currentState = .zipCodeEntered
 
@@ -277,7 +281,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     func setFrameA()
     {
         
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        if(biPad == true)
         {
         self.frame = CGRect(x: self.frame.origin.x, y: self.frame.origin.y-self.frame.height/3-100, width: self.frame.width, height: self.frame.height*2+100)
         }
@@ -295,7 +299,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     func setFrameC()
     {
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        if(biPad == true)
         {
         keypadControl.frame = CGRect(x: self.frame.width/2-keypadControl.keypadControlWidth/2, y: 191, width: keypadControl.keypadControlWidth, height: keypadControl.keypadControlHeight)
         }
@@ -309,7 +313,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     func setFrameD()
     {
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        if(biPad == true)
         {
         self.label.frame = CGRect(x: self.label.frame.origin.x, y: 0, width: self.frame.width, height: 120)
         }
@@ -373,11 +377,20 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             {_ in
         });
     }
+    
+    func setFrameG()
+    {
+        setFrameA()
+        
+          keypadControl.frame = CGRect(x: 0, y: 0,
+                                       width: keypadControl.keypadControlWidth, height: keypadControl.keypadControlHeight)
+    }
+    
     var bClearTextLabel = true
     
     func keypadDigitPressed(digitPressed: String) {
         
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        if(biPad == true)
         {
           inputTextField.text = inputTextField.text! + digitPressed
         }
@@ -415,7 +428,20 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         
         if(currentState == registrationState.ccvEntered)
         {
-            if(inputTextField.text?.characters.count==3)
+            // For AMEX cards, allow 4
+            var ccvCount = 3
+            let index = registration.cc_info.startIndex.advancedBy(2)
+            let amexStr = registration.cc_info.substringToIndex(index)
+            if(amexStr == "34")
+            {
+             ccvCount = 4;
+            }
+            if(amexStr == "37")
+            {
+                ccvCount = 4
+            }
+            
+            if(inputTextField.text?.characters.count==ccvCount)
             {
                 registration.ccv = inputTextField.text!
                 
@@ -425,11 +451,11 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                         
                     }, completion: {_ in
                         
-                        if(UIDevice.currentDevice().userInterfaceIdiom != .Pad)
-                        {
+                        //if(UIDevice.currentDevice().userInterfaceIdiom != .Pad)
+                        //{
                             self.registration.first_name = "Anonymous"
                             self.registration.last_name = "Anonymous"
-                        }
+                        //}
                         self.delegate?.registrationCompleted()
                         self.cancel()
                     });             
@@ -580,10 +606,11 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     func keypadClear()
     {
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+
+        if(biPad == true)
         {
             inputTextField.text = ""
-            
+            label.text = ""
         }
         else
         {

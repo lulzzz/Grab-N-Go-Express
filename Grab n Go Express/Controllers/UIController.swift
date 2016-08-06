@@ -17,6 +17,10 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
     
     var picker : SBSBarcodePicker = SBSBarcodePicker()
 
+    let cancelButton   = UIButton(type: UIButtonType.System) as UIButton
+    let btnWidth: CGFloat = 210
+    let btnHeight: CGFloat = 52
+    let btnSpacing: CGFloat = 5
     
     // I'm interested in storing the device type to manage the position of elements
     // depending on which device we're on.  This may be unnecessary, I'm still learning
@@ -33,6 +37,25 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         picker.view.hidden = true
         picker.view.alpha = 0.0
         view.addSubview(picker.view)
+        
+        
+    }
+    
+    func addCancelButton()
+    {
+        cancelButton.frame = CGRectMake(view.frame.width/2-btnWidth/2+btnWidth/2+btnSpacing/2, view.frame.height-btnHeight-btnSpacing-25, btnWidth, 50)
+        //cancelButton.frame = CGRectMake(0, 0, btnWidth, 50)
+        cancelButton.backgroundColor = UIColor(red: 237/255, green: 28/255, blue: 36/255, alpha: 1.0)
+        cancelButton.setTitle("CANCEL", forState: UIControlState.Normal)
+        cancelButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 36.0)
+        cancelButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        cancelButton.addTarget(self, action: "cancel", forControlEvents: UIControlEvents.TouchUpInside)
+        view.addSubview(cancelButton)
+    }
+    
+    func cancel()
+    {
+        view.removeFromSuperview()
     }
     
     func barcodePicker(picker: SBSBarcodePicker!, didScan session: SBSScanSession!) {

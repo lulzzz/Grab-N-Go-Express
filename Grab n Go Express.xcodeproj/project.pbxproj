@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8E002A0E1CC0703400503697 /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E002A0D1CC0703400503697 /* Timer.swift */; };
+		8E002A101CCB1B8800503697 /* ItemLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E002A0F1CCB1B8800503697 /* ItemLookup.swift */; };
 		8E1C1DED1BD918F9008841B3 /* Grab_n_Go_Express.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8E1C1DEB1BD918F9008841B3 /* Grab_n_Go_Express.xcdatamodeld */; };
 		8E1C1DEF1BD918F9008841B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E1C1DEE1BD918F9008841B3 /* Assets.xcassets */; };
 		8E1C1DF21BD918F9008841B3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E1C1DF01BD918F9008841B3 /* LaunchScreen.storyboard */; };
@@ -33,6 +35,8 @@
 		8E72148E1BE66DA900A23741 /* AppIcon58x58.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E72148D1BE66DA900A23741 /* AppIcon58x58.png */; };
 		8E7214901BE66DFD00A23741 /* AppIcon87x87.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E72148F1BE66DFD00A23741 /* AppIcon87x87.png */; };
 		8E72C8011BE1CC9A006A8E91 /* big_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E72C8001BE1CC9A006A8E91 /* big_button.png */; };
+		8E76A9991CB6A7B30003515E /* NoScanItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E76A9981CB6A7B30003515E /* NoScanItemView.swift */; };
+		8E76A99B1CB951C80003515E /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 8E76A99A1CB951C80003515E /* Settings.bundle */; };
 		8E8C0F311BE3BB3000B1BB9F /* _paymentOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8C0F301BE3BB3000B1BB9F /* _paymentOptionsView.swift */; };
 		8E8E07121BD9199200A80FF8 /* ApiRequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8E070D1BD9199200A80FF8 /* ApiRequestController.swift */; };
 		8E8E07131BD9199200A80FF8 /* JsonRequestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8E070E1BD9199200A80FF8 /* JsonRequestController.swift */; };
@@ -115,9 +119,12 @@
 		8EE4A4DE1BF0F036008877DE /* UpdateCardControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE4A4DD1BF0F036008877DE /* UpdateCardControl.swift */; };
 		8EE4A4E21BF27F14008877DE /* _inventoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE4A4E11BF27F14008877DE /* _inventoryView.swift */; };
 		8EE4A4E41BF2800D008877DE /* Inventory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE4A4E31BF2800D008877DE /* Inventory.swift */; };
+		8EFF06B21CBD35D800C1A84A /* BarcodeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EFF06B11CBD35D800C1A84A /* BarcodeControl.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8E002A0D1CC0703400503697 /* Timer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		8E002A0F1CCB1B8800503697 /* ItemLookup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemLookup.swift; sourceTree = "<group>"; };
 		8E1C1DE11BD918F9008841B3 /* Grab n Go Express.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Grab n Go Express.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E1C1DEC1BD918F9008841B3 /* Grab_n_Go_Express.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Grab_n_Go_Express.xcdatamodel; sourceTree = "<group>"; };
 		8E1C1DEE1BD918F9008841B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -147,6 +154,8 @@
 		8E72148D1BE66DA900A23741 /* AppIcon58x58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon58x58.png; sourceTree = "<group>"; };
 		8E72148F1BE66DFD00A23741 /* AppIcon87x87.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon87x87.png; sourceTree = "<group>"; };
 		8E72C8001BE1CC9A006A8E91 /* big_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = big_button.png; path = "Grab n Go Express/Custom Controls/Images/Backgrounds/big_button.png"; sourceTree = SOURCE_ROOT; };
+		8E76A9981CB6A7B30003515E /* NoScanItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NoScanItemView.swift; path = ../../NoScanItemView.swift; sourceTree = "<group>"; };
+		8E76A99A1CB951C80003515E /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		8E8C0F301BE3BB3000B1BB9F /* _paymentOptionsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _paymentOptionsView.swift; sourceTree = "<group>"; };
 		8E8E070D1BD9199200A80FF8 /* ApiRequestController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApiRequestController.swift; sourceTree = "<group>"; };
 		8E8E070E1BD9199200A80FF8 /* JsonRequestController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonRequestController.swift; sourceTree = "<group>"; };
@@ -230,6 +239,7 @@
 		8EE4A4DD1BF0F036008877DE /* UpdateCardControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateCardControl.swift; sourceTree = "<group>"; };
 		8EE4A4E11BF27F14008877DE /* _inventoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _inventoryView.swift; sourceTree = "<group>"; };
 		8EE4A4E31BF2800D008877DE /* Inventory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Inventory.swift; sourceTree = "<group>"; };
+		8EFF06B11CBD35D800C1A84A /* BarcodeControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BarcodeControl.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -271,6 +281,7 @@
 		8E1C1DD81BD918F9008841B3 = {
 			isa = PBXGroup;
 			children = (
+				8E76A99A1CB951C80003515E /* Settings.bundle */,
 				8EB563531BDD945A00D41A49 /* Resources */,
 				8EB563511BDD941500D41A49 /* ScanditBarcodeScanner.framework */,
 				8EB563501BDD93EE00D41A49 /* Frameworks */,
@@ -341,6 +352,7 @@
 				8E8E07611BD919A900A80FF8 /* KeypadControl.swift */,
 				8E8E07621BD919A900A80FF8 /* PasscodeControl.swift */,
 				8E8E07631BD919A900A80FF8 /* PhoneNumberControl.swift */,
+				8EFF06B11CBD35D800C1A84A /* BarcodeControl.swift */,
 				8E8E07641BD919A900A80FF8 /* RegisterUserControl.swift */,
 				8EE4A4DD1BF0F036008877DE /* UpdateCardControl.swift */,
 				8E8E07651BD919A900A80FF8 /* ShoppingCartControl.swift */,
@@ -361,6 +373,7 @@
 				8E8E07841BD919CB00A80FF8 /* Users.swift */,
 				8E6DBA7A1BE04CC900131062 /* ShoppingCart.swift */,
 				8EE4A4E31BF2800D008877DE /* Inventory.swift */,
+				8E002A0F1CCB1B8800503697 /* ItemLookup.swift */,
 			);
 			name = Models;
 			path = "Grab n Go Express/Models";
@@ -432,9 +445,11 @@
 				8E53963E1C78C88200F81307 /* IdentifyLocationView.swift */,
 				8E8E07E51BDBB91400A80FF8 /* iPhone */,
 				8E8E07B31BD91B5D00A80FF8 /* LoginView.swift */,
+				8E002A0D1CC0703400503697 /* Timer.swift */,
 				8E8E07B11BD91B5D00A80FF8 /* CancelledTransactionView.swift */,
 				8E8E07B21BD91B5D00A80FF8 /* ConfigurationView.swift */,
 				8E8E07B61BD91B5D00A80FF8 /* SelfCheckoutView.swift */,
+				8E76A9981CB6A7B30003515E /* NoScanItemView.swift */,
 				8E6FEF001BE2A0BC008E4BCC /* PaymentOptionsView.swift */,
 				8E2C3BBF1C5D34A500E837F7 /* VendorConfigurationView.swift */,
 			);
@@ -584,6 +599,7 @@
 				8E8E07A41BD91A3700A80FF8 /* background_green.png in Resources */,
 				8E7214881BE66CB200A23741 /* AppIcon80x80.png in Resources */,
 				8E6FEF031BE2B0A3008E4BCC /* scanitem.png in Resources */,
+				8E76A99B1CB951C80003515E /* Settings.bundle in Resources */,
 				8E72148E1BE66DA900A23741 /* AppIcon58x58.png in Resources */,
 				8E1C1DF21BD918F9008841B3 /* LaunchScreen.storyboard in Resources */,
 				8E72148C1BE66D5E00A23741 /* AppIcon29x29.png in Resources */,
@@ -634,14 +650,18 @@
 				8E8E077B1BD919A900A80FF8 /* RegisterUserControl.swift in Sources */,
 				8E2C3BC01C5D34A500E837F7 /* VendorConfigurationView.swift in Sources */,
 				8E8E07161BD9199200A80FF8 /* UIElementController.swift in Sources */,
+				8E76A9991CB6A7B30003515E /* NoScanItemView.swift in Sources */,
 				8E8E076A1BD919A900A80FF8 /* CustomControls.swift in Sources */,
 				8E6FEF071BE2BF4F008E4BCC /* _selfCheckoutView.swift in Sources */,
 				8E8E07791BD919A900A80FF8 /* PasscodeControl.swift in Sources */,
 				8E8E07851BD919CB00A80FF8 /* Location.swift in Sources */,
 				8E8E07141BD9199200A80FF8 /* NetworkRequestController.swift in Sources */,
+				8E002A0E1CC0703400503697 /* Timer.swift in Sources */,
 				8E8E07121BD9199200A80FF8 /* ApiRequestController.swift in Sources */,
+				8E002A101CCB1B8800503697 /* ItemLookup.swift in Sources */,
 				8EE4A4E41BF2800D008877DE /* Inventory.swift in Sources */,
 				8E8E07691BD919A900A80FF8 /* AnimatedControl.swift in Sources */,
+				8EFF06B21CBD35D800C1A84A /* BarcodeControl.swift in Sources */,
 				8E8E07871BD919CB00A80FF8 /* Registration.swift in Sources */,
 				8E8E07DD1BD9540600A80FF8 /* SwiftyJSON.swift in Sources */,
 				8E8E07BA1BD91B5D00A80FF8 /* ConfigurationView.swift in Sources */,

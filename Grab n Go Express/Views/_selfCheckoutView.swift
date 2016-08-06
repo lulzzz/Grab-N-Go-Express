@@ -24,6 +24,8 @@ class _selfCheckoutView: SelfCheckoutView {
         
         super.viewDidLoad()
 
+        textInput.removeFromSuperview();
+        
         scanbycamera()
         // Do any additional setup after loading the view.
     }

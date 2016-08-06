@@ -15,6 +15,7 @@ class loginView: LoginView, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+ 
         let centerX = view.bounds.width / 2
         let bottomY = view.bounds.height
         let rightX = view.bounds.width

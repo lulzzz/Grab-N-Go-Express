@@ -138,6 +138,11 @@ class AnimatedApprovalControl: UIView {
         
         self.animateRegistrationInfo()
         wobbleLeft()
+        
+        Timeout(20.0) { self.animateOut() }
+        
+        return
+
     }
     
     func animateOut(){

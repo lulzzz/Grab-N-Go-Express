@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SelfCheckoutView: UIController, ShoppingCartControlDelegate, ApiResultsDelegate, PaymentOptionsDelegate, RegisterUserControlDelegate, DTDeviceDelegate {
+class SelfCheckoutView: UIController, ShoppingCartControlDelegate, ApiResultsDelegate, PaymentOptionsDelegate, NoScanItemDelegate, RegisterUserControlDelegate, DTDeviceDelegate, UITextFieldDelegate {
 
     /* Our Model Classes */
     var user: User = User()
@@ -30,6 +30,8 @@ class SelfCheckoutView: UIController, ShoppingCartControlDelegate, ApiResultsDel
     var logoutButton: UIButton = UIButton()
     var updateCardButton: UIButton = UIButton()
     var cancelOrderButton: UIButton = UIButton()
+    var accountSettingsButton: UIButton = UIButton()
+    var noScanItemButton: UIButton = UIButton()
     
     var balanceAvailableButton: UIButton = UIButton()
     var amountDueButton: UIButton = UIButton()
@@ -45,14 +47,15 @@ class SelfCheckoutView: UIController, ShoppingCartControlDelegate, ApiResultsDel
     
     var shoppingCartControl: ShoppingCartControl = ShoppingCartControl()
     
-    
-    
     var totalAmountDue = 0.00
+    
+    var textInput = UITextField()
 
     var dtdevices: DTDevices = DTDevices()
     
     // -(BOOL)barcodeSetScanMode:(int)mode error:(NSError **)error;
     
+    var myInputView : UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -126,7 +129,7 @@ class SelfCheckoutView: UIController, ShoppingCartControlDelegate, ApiResultsDel
         view.addSubview(updateCardButton)
         
         cancelOrderButton.frame = CGRect(x: 570, y: 30+40+15+40+15, width: 175, height: 40)
-        cancelOrderButton.setTitle("cancel order", forState: .Normal)
+        cancelOrderButton.setTitle("item lookup", forState: .Normal)
         cancelOrderButton.titleLabel?.font = UIFont(name: "Arial", size: 28)
         cancelOrderButton.backgroundColor = menuButtonColor
         cancelOrderButton.setTitleColor(menuButtonTextColor, forState: .Normal)
@@ -164,14 +167,73 @@ class SelfCheckoutView: UIController, ShoppingCartControlDelegate, ApiResultsDel
     }
     catch {
     print(error)
-    }
+    
         */
     
+        let textInputRect: CGRect = CGRect(x: -339, y: -75, width: 339, height: 75)
+        textInput.frame = textInputRect
+        textInput.textAlignment = .Center
+        textInput.allowsEditingTextAttributes = false
+        textInput.backgroundColor = UIColor.redColor()
+        textInput.borderStyle = UITextBorderStyle.Line
+        textInput.becomeFirstResponder()
+        //textInput.autocorrectionType = UITextAutocorrectionType.No
+        //textInput.keyboardType = .NumberPad
+        textInput.delegate = self
+        textInput.inputView = myInputView
 
+        // external_barcode_scanner
+        let external_barcode_scanner = NSUserDefaults.standardUserDefaults().boolForKey("external_barcode_scanner")
         
+        if(external_barcode_scanner)
+        {
+            view.addSubview(textInput)
+            hideTheAssistantBar(self.view);
+        }
         
+        Timeout(180.0) { self.logout() }
+        
+        let camera_by_default = NSUserDefaults.standardUserDefaults().boolForKey("camera_default")
+        
+        if(camera_by_default)
+        {
+            scanbycamera()
+        }
     }
 
+    func hideTheAssistantBar(view:UIView) {
+        //Check this view
+        for case let textField as UITextField in view.subviews {
+            if #available(iOS 9.0, *) {
+                let item : UITextInputAssistantItem = textField.inputAssistantItem
+                item.leadingBarButtonGroups = []
+                item.trailingBarButtonGroups = []
+            } else {
+                // Fallback on earlier versions
+            }
+
+        }
+        for case let searchBar as UISearchBar in view.subviews {
+            if #available(iOS 9.0, *) {
+                let item : UITextInputAssistantItem = searchBar.inputAssistantItem
+                item.leadingBarButtonGroups = []
+                item.trailingBarButtonGroups = []
+            } else {
+                // Fallback on earlier versions
+            }
+
+        }
+        
+        //Now find this views subviews
+        let subviews = view.subviews
+        
+        for subview : AnyObject in subviews {
+            if subview.isKindOfClass(UIView) {
+                hideTheAssistantBar(subview as! UIView)
+            }
+        }
+    }
+    
     override func viewWillAppear(animated: Bool) {
         balanceAvailableButton.setTitle(formatter.stringFromNumber(user.balance), forState: .Normal)
         setBaseParameters(user)
@@ -256,6 +318,26 @@ class SelfCheckoutView: UIController, ShoppingCartControlDelegate, ApiResultsDel
     
     var errorAlertView: ErrorAlertControl!
     
+    func itemTypedIn(barcode: String)
+    {
+        let product: Product = Product()
+        product.barcode = barcode
+        itemScanned(product)
+    }
+    
+    func typeBarcodeManually()
+    {
+        let view = NoScanItemView()
+        
+        view.setBaseParameters(user)
+        
+        view.delegate = self
+        view.phoneNumber = phoneNumber
+        view.passcode = passcode
+        
+        self.presentViewController(view, animated: true, completion: nil)
+    }
+    
     func rechargeAccount()
     {
         //clearUIElements()
@@ -284,6 +366,12 @@ class SelfCheckoutView: UIController, ShoppingCartControlDelegate, ApiResultsDel
         shoppingCartControl.addProduct(product)
     }
     
+    func itemLookup(itemList: ItemLookup)
+    {
+        
+    }
+    
+
     /* This is the delegate function for the camera-based barcode scanned */
     override func barcodePicker(picker: SBSBarcodePicker!, didScan session: SBSScanSession!) {
         
@@ -413,15 +501,16 @@ var paynowLabel: UILabel = UILabel()
     
     func cancelorder()
     {
+        typeBarcodeManually()
+        
+        return;
+        
         //let product: Product = Product()
         //product.barcode = "555"
         //itemScanned(product)
         
         // Animate a cancelled transaction
         shoppingCartControl.clear()
-        /*
-        
-        */
     }
     
     func reloadFiveDollars()
@@ -635,10 +724,30 @@ var paynowLabel: UILabel = UILabel()
         default:
             dispatch_async(dispatch_get_main_queue(), {
                 self.processErrors(jsonData)
+                print("---here---")
                 //self.registrationErrorInvalidCCV()
             })
             break
         }
     }
+    
+    var scannedBarcodeData = "";
+    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+        
+        print(string);
+        if(string != ",")
+        {
+        scannedBarcodeData += string
+        }
+        else
+        {
+            let product: Product = Product()
+            product.barcode = scannedBarcodeData
+            itemScanned(product)
+            scannedBarcodeData = ""
+        }
 
+        return false
+    }
+    
 }

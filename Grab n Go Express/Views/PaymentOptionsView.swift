@@ -100,6 +100,13 @@ class PaymentOptionsView: UIController {
         instructionsText = addStaticLabel("Transfer money onto your market account", font: "CardenioModern-Bold", fontSize: 27, xPos: 272, yPos: 174, width: 400, height: 40, xPosW: 272, yPosW: 200, widthW: 400, heightW: 45, textColor: 0xFFFFFF)
         instructionsText.textAlignment = .Justified
     
+        addCancelButton();
+        cancelButton.frame.origin.x = view.frame.width/2-cancelButton.frame.width/2
+
+    }
+    
+    override func cancel() {
+        dismissViewControllerAnimated(true, completion: nil)
     }
 
     func reloadFiveDollars()

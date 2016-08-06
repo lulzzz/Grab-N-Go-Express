@@ -240,8 +240,12 @@ options: .CurveEaseOut, animations: {
     func save()
     {
         // Save the configuration info here
-        let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject(locationSerial.text, forKey: "location_serial")
+        //let defaults = NSUserDefaults.standardUserDefaults()
+        
+        //defaults.setObject(locationSerial.text, forKey: "location_serial")
+        
+        NSUserDefaults.standardUserDefaults().setValue(locationSerial.text, forKey: "location_serial")
+        
         //view.removeFromSuperview()
         dismissViewControllerAnimated(true, completion: nil)
     }
@@ -252,10 +256,12 @@ options: .CurveEaseOut, animations: {
     }
     
     override func barcodePicker(picker: SBSBarcodePicker!, didScan session: SBSScanSession!) {
-        let defaults = NSUserDefaults.standardUserDefaults()
+        //let defaults = NSUserDefaults.standardUserDefaults()
         
         
-        defaults.setObject(locationSerial.text, forKey: "location_serial")
+        //defaults.setObject(locationSerial.text, forKey: "location_serial")
+        NSUserDefaults.standardUserDefaults().setValue(locationSerial.text, forKey: "location_serial")
+
         dismissViewControllerAnimated(true, completion: nil)
     }
     /*

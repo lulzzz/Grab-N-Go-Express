@@ -15,6 +15,7 @@ import UIKit
 
 protocol ApiResultsDelegate{
     func barcodeScanned(product: Product)
+    func itemLookup(itemList: ItemLookup)
 }
 
 class ApiRequestController: JsonRequestController {
@@ -84,6 +85,7 @@ class ApiRequestController: JsonRequestController {
         errorDescriptions[500] = "Unknown Error - General Exception";
         errorDescriptions[501] = "This Phone Number is not Registered";
         errorDescriptions[502] = "The Passcode Provided is Incorrect";
+        errorDescriptions[503] = "Invalid Location Serial Number Provided";
         errorDescriptions[506] = "This Phone Number is Already Registered";
         errorDescriptions[600] = "Invalid Phone Number Provided";
         errorDescriptions[601] = "Invalid Pin Number Provided";
@@ -101,6 +103,7 @@ class ApiRequestController: JsonRequestController {
     func processErrors(jsonData: JSON)
     {
         let error: NSNumber = jsonData["Error"].number!
+        let action = jsonData["Action"].string
         let errorInt: Int = error.integerValue
         var alertText = errorDescriptions[errorInt]
         if let error_message = jsonData["error_message"].string
@@ -115,6 +118,24 @@ class ApiRequestController: JsonRequestController {
         let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: alertText!)
         view.addSubview(errorAlertView)
         errorAlertView.centerOKButtonAnimated()
+        
+        if(error == 1000)
+        {
+            if(action == "register")
+            {
+                print("---here 3---")
+                
+                //registrationConfirmed(jsonData);
+            }
+        }
+        
+        if(error == 503)
+        {
+            let configView = ConfigurationView()
+            configView.view.frame = view.frame
+            configView.view.backgroundColor = UIColor.whiteColor()
+            self.presentViewController(configView, animated: true, completion: nil)
+        }
         //backgroundImageView.alpha = 0.50
         //errorAlertView.okButton.setTitle("Re-Enter", forState: .Normal)
         //errorAlertView.cancelButton.setTitle("Cancel", forState: .Normal)
@@ -286,12 +307,7 @@ class ApiRequestController: JsonRequestController {
     {
         
     }
-    
-    func itemLookup()
-    {
-        
-    }
-    
+
     func getNonBarcode()
     {
         
@@ -349,6 +365,24 @@ class ApiRequestController: JsonRequestController {
         return true
     }
     
+    func itemLookup(product: String) -> Bool
+    {
+        addParameter("action", value: "item_lookup")
+        addParameter("barcode", value: product);
+        networkRequest(itemLookupResult);
+        return true
+    }
+    
+    func itemLookupResult(jsonData: JSON)
+    {
+         let itemList: ItemLookup = ItemLookup()
+        for (key, value) in jsonData {
+            itemList.addItem(key, description: jsonData[key].string!)
+        }
+
+        shoppingCartDelegate?.itemLookup(itemList)
+    }
+    
     /* This is called after a network request is submitted with the "item_scanned" action set */
     func itemScannedResult(jsonData: JSON)
     {
@@ -356,7 +390,6 @@ class ApiRequestController: JsonRequestController {
         switch(error)
         {
             case 0:
-
                 let product: Product = Product()
                 product.barcode = jsonData["barcode"].string!
                 product.description = jsonData["item_description"].string!

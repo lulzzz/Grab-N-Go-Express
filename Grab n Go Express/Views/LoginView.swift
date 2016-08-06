@@ -71,9 +71,20 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         }
         
         let defaults = NSUserDefaults.standardUserDefaults()
+        
+        var appDefaults = Dictionary<String, AnyObject>()
+        appDefaults["location_serial"] = false
+        NSUserDefaults.standardUserDefaults().registerDefaults(appDefaults)
+        NSUserDefaults.standardUserDefaults().synchronize()
+        
+        //let a = NSUserDefaults.standardUserDefaults().boolForKey("sound")
+        
+        let settingsUpcIdentifier = NSUserDefaults.standardUserDefaults().stringForKey("location_serial");
+        print(settingsUpcIdentifier);
+
         //defaults.setObject(locationSerial.text, forKey: "location_serial")
         //defaults.setObject(locationUsername.text, forKey: "location_username")
-        if defaults.objectForKey("location_serial") == nil
+        if NSUserDefaults.standardUserDefaults().stringForKey("location_serial") == "0"
         {
             let configView = ConfigurationView()
             configView.view.frame = view.frame
@@ -87,14 +98,15 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
             print("Location Serial Set")
             print(defaults.objectForKey("location_serial"))
         }
+
         
         //user.phoneNumber = "8587366808"
         //user.passcode = "4410"
         //loginRequest(user)
-        
     }
     
     override func viewWillAppear(animated: Bool) {
+        
         resetScreen()
     }
     
@@ -106,9 +118,20 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         self.presentViewController(configView, animated: true, completion: nil)
     }
     
+    // keyboard height adjust
+    func keyboardWillShow(notification: NSNotification) {
+        
+        let keyboardFrame = (notification.userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+        cancelButton.frame.origin.y = keyboardFrame.origin.y - cancelButton.frame.height
+        cancelButton.frame.origin.x = view.frame.width/2-cancelButton.frame.width/2
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
+        
         // 77, 105, 22
         
         //var archerBold77 = UIFont(name: "ArcherBold", size: 77)
@@ -176,17 +199,25 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         // Dispose of any resources that can be recreated.
     }
     
+    override func cancel()
+    {
+        resetScreen()
+    }
+    
     func advanceState()
     {
         switch(loginStatus)
         {
         case .Anonymous:
             loginStatus = .ObtainingPhoneNumber
+            addCancelButton();
+            cancelButton.frame.origin.x = view.frame.width/2-cancelButton.frame.width/2
             animatedHideAnonymousState()
             break
             
         case .ObtainingPhoneNumber:
             loginStatus = .ObtainingPinNumberState
+            
             break
             
         case .ObtainingPinNumberState:
@@ -263,6 +294,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         passcodeControl.textInput.text = ""
         phoneNumberControl.phoneNumber = ""
         passcodeControl.passcode = ""
+        cancelButton.removeFromSuperview();
         
         UIView.animateWithDuration(0.5, delay: 0.4,
             options: .CurveEaseOut, animations: {
@@ -274,7 +306,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
                 self.signupButton.frame.origin.x = self.signupButtonOriginalX
                 self.logoView.frame = self.logoOriginalFrame
                 self.logoView.alpha = 1.0
-                
+                self.passcodeControl.alpha = 1.0
                 self.transparentApple.alpha = 1.0
                 self.noAccountLabel.alpha = 1.0
                 self.arrowView.alpha = 1.0
@@ -284,11 +316,15 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
                 self.backgroundImageView.alpha = 0.0
                 //self.phoneNumberControl.alpha = 0
                 self.phoneNumberControl.hidden = true
-                self.instructionLabel.hidden = true
+                //
+
                 UIView.animateWithDuration(0.5, delay: 0.0,
                     options: .CurveEaseOut, animations: {
                         self.backgroundImageView.alpha = 1.0
                         self.phoneNumberControl.frame = CGRect(x: self.screenSize.width/2-self.phoneNumberControl.frame.width/2, y: self.phoneNumberControl.frame.origin.y, width: self.phoneNumberControl.frame.width, height: self.phoneNumberControl.frame.height)
+                        self.passcodeControl.alpha = 0.0
+                        self.passcodeControl.hidden = true
+                        self.instructionLabel.hidden = true
                         
                         self.instructionLabel.alpha = 1.0
                     }, completion: nil);
@@ -376,6 +412,12 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
      func phoneNumberCompletion(phoneNumber: String)
      {
+        
+        if(phoneNumber == "156-631-2311")
+        {
+                // Go to inventory view
+                // Get password
+        }
         
         self.phoneNumber = phoneNumber
             // Animate phoneNumberControl offscreen
@@ -470,22 +512,25 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
     var animatedRegistrationProcess: AnimatedApprovalControl!
     
+    // Set a timeout for the AnimatedApprovalControl.
     func registrationCompleted()
     {
+        
+
+            
         registrationInfo = registerUserView.registration
         let animatedRegistrationProgress = AnimatedApprovalControl(frame: CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.height), registration: registrationInfo)
         self.animatedRegistrationProcess = animatedRegistrationProgress
         view.addSubview(animatedRegistrationProgress)
         animatedRegistrationProgress.animateIn()
 
-
-        
         // call registerUser
         dispatch_async(dispatch_get_main_queue(), {
             
-        self.registerUser(self.registrationInfo)
+            self.registerUser(self.registrationInfo)
             
         })
+        
         
         // We need a way of being notified when this is done...
     }
@@ -495,6 +540,8 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     }
     
     override func registrationConfirmed(jsonData: JSON) {
+        
+        print("im here bitch")
         
         let error = jsonData["Error"]
 
@@ -524,6 +571,11 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
                 self.processErrors(jsonData)
                 //self.registrationErrorInvalidCCV()
                
+            break
+            
+        case 1000:
+            self.bIsRegistering = true
+            self.processErrors(jsonData)
             break
             
         default:

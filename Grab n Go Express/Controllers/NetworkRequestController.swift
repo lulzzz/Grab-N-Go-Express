@@ -15,9 +15,9 @@ import UIKit
 class NetworkRequestController: UIElementController {
 
     //#if DEBUG
-        //var urlResource = "https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Sandbox/2.0/SelfCheckout.php"
-    //#else
         var urlResource = "https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php"
+    //#else
+        //var urlResource = "http://166.78.61.142/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php"
     //#endif
     
     // 166.78.61.142
@@ -93,16 +93,17 @@ class NetworkRequestController: UIElementController {
         
         //#if DEBUG
             let locationSerial: String = NSUserDefaults.standardUserDefaults().objectForKey("location_serial") as! String!
-            if locationSerial.isEmpty
+            if locationSerial == "0"
             {
                 print("We're going to have a problem...start the configuration view")
             }
+        
+            print("location_serial" + locationSerial)
             //#else
             //   let locationSerial: String = "10000000020";
         
         //NSUserDefaults.standardUserDefaults().objectForKey("location_serial") as! String!
         //#endif
-
         
         addParameter("location_upc_identifier", value: locationSerial)
         
