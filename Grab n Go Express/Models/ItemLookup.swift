@@ -15,12 +15,12 @@ class ItemLookup {
     var itemTable = [String: String]()
     
     
-    func addItem(barcode: String, description: String)
+    func addItem(_ barcode: String, description: String)
     {
         itemTable[barcode] = description
     }
      
-    func getItem(position: Int) -> (String, String)
+    func getItem(_ position: Int) -> (String, String)
     {
         return ("555", "Apple");
     }

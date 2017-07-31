@@ -20,7 +20,7 @@ class loginView: LoginView, UITextFieldDelegate {
         let bottomY = view.bounds.height
         let rightX = view.bounds.width
 
-        transparentApple.hidden = true
+        transparentApple.isHidden = true
         
         loginButton.removeFromSuperview()
         signupButton.removeFromSuperview()
@@ -44,7 +44,7 @@ class loginView: LoginView, UITextFieldDelegate {
         signupButtonOriginalX = signupButton.frame.origin.x
         
         arrowView.frame = CGRect(x: 80, y: signupButton.frame.origin.y+signupButton.frame.height-125, width: 71, height: 50)
-        arrowView.transform = CGAffineTransformMakeScale(-1, 1)
+        arrowView.transform = CGAffineTransform(scaleX: -1, y: 1)
 
         noAccountLabel.frame = CGRect(x: 145, y: signupButton.frame.origin.y+signupButton.frame.height-175, width: 160, height: 98)
         noAccountLabel.font = UIFont(name: "CardenioModern-Bold", size: 28)
@@ -53,25 +53,25 @@ class loginView: LoginView, UITextFieldDelegate {
         
         phoneNumberControl.frame = CGRect(x: 0, y: 0, width: rightX, height: bottomY)
         
-        phoneNumberControl.keypadControl.hidden = true
+        phoneNumberControl.keypadControl.isHidden = true
         phoneNumberControl.hatchedBackgroundView.frame = CGRect(x: 0, y: 125, width: rightX, height: 115)
         phoneNumberControl.textInput.frame = CGRect(x: 0, y: 125, width: rightX, height: 115)
         phoneNumberControl.label.frame = CGRect(x: 0, y: 25, width: rightX, height: 115)
         phoneNumberControl.textInput.delegate = self
         
         passcodeControl.frame = CGRect(x: 0, y: 0, width: rightX, height: bottomY)
-        passcodeControl.keypadControl.hidden = true
+        passcodeControl.keypadControl.isHidden = true
         passcodeControl.hatchedBackgroundView.frame = CGRect(x: 0, y: 125, width: rightX, height: 115)
         passcodeControl.textInput.frame = CGRect(x: 0, y: 125, width: rightX, height: 115)
-        passcodeControl.textInput.keyboardType = .NumberPad
+        passcodeControl.textInput.keyboardType = .numberPad
         passcodeControl.label.frame = CGRect(x: 0, y: 25, width: rightX, height: 115)
         passcodeControl.textInput.delegate = self
         
-        let defaults = NSUserDefaults.standardUserDefaults()
+        let defaults = UserDefaults.standard
         
-        if let phone_number = defaults.stringForKey("phone_number")
+        if let phone_number = defaults.string(forKey: "phone_number")
         {
-            if let passcode = defaults.stringForKey("passcode")
+            if let passcode = defaults.string(forKey: "passcode")
             {
                 //let user: User = User()
                 //user.phoneNumber = phone_number
@@ -108,15 +108,29 @@ class loginView: LoginView, UITextFieldDelegate {
         phoneNumberControl.textInput.becomeFirstResponder()
     }
     
-    override func passcodeCompletion(passcode: String) {
+    override func passcodeCompletion(_ passcode: String) {
         super.passcodeCompletion(passcode)
         passcodeControl.textInput.endEditing(true)
         phoneNumberControl.textInput.endEditing(true)
     }
 
     
-    override func loginResult(jsonData: JSON)
+    override func loginResult(_ jsonData: JSON)
     {
+        if jsonData["admin"] != nil
+        {
+            if jsonData["admin"].bool! == true
+            {
+                // Forward to the admin page
+                print("admin is true");
+                var adminView = AdministrationView()
+                self.present(adminView, animated: true, completion: nil)
+                return;
+            }
+            
+            
+        }
+        
         let error = jsonData["Error"]
         if(error == 0)
         {
@@ -126,17 +140,17 @@ class loginView: LoginView, UITextFieldDelegate {
             user.balance = Double(jsonData["Balance"].double!);
             user.accountOperator = jsonData["Operator"].string!
             
-            selfCheckout.view.backgroundColor = UIColor.whiteColor()
+            selfCheckout.view.backgroundColor = UIColor.white
             selfCheckout.login(user)
             selfCheckout.user = user
 
-            let defaults = NSUserDefaults.standardUserDefaults()
-            defaults.setObject(user.phoneNumber, forKey: "phone_number")
-            defaults.setObject(user.passcode, forKey: "passcode")
+            let defaults = UserDefaults.standard
+            defaults.set(user.phoneNumber, forKey: "phone_number")
+            defaults.set(user.passcode, forKey: "passcode")
             
             print("Current Device")
             
-            self.presentViewController(selfCheckout, animated: true, completion: nil)
+            self.present(selfCheckout, animated: true, completion: nil)
             
         }
         else
@@ -156,7 +170,7 @@ class loginView: LoginView, UITextFieldDelegate {
         
         switch(loginStatus)
         {
-        case .ObtainingPinNumberState:
+        case .obtainingPinNumberState:
             passcodeControl.textInput.becomeFirstResponder()
             break
             
@@ -178,13 +192,13 @@ class loginView: LoginView, UITextFieldDelegate {
     {
         // Anonymous State UI
         //loginButton.alpha = 0
-        UIView.animateWithDuration(0.5, delay: 0.4,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.4,
+            options: .curveEaseOut, animations: {
                 self.loginButton.center.x += self.view.bounds.width
             }, completion: nil)
         
-        UIView.animateWithDuration(0.5, delay: 0.5,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.5,
+            options: .curveEaseOut, animations: {
                 self.signupButton.center.x += self.view.bounds.width
                 //self.logoView.frame = CGRect(x: 45, y: 30, width: 210, height: 200)
                 self.logoView.alpha = 0.0
@@ -196,10 +210,10 @@ class loginView: LoginView, UITextFieldDelegate {
                 self.setBackgroundImage("background_blue.png")
                 self.backgroundImageView.alpha = 0
                 self.phoneNumberControl.alpha = 1.0
-                self.phoneNumberControl.hidden = false
-                self.instructionLabel.hidden = false
-                UIView.animateWithDuration(0.5, delay: 0.0,
-                    options: .CurveEaseOut, animations: {
+                self.phoneNumberControl.isHidden = false
+                self.instructionLabel.isHidden = false
+                UIView.animate(withDuration: 0.5, delay: 0.0,
+                    options: .curveEaseOut, animations: {
                         self.backgroundImageView.alpha = 1.0
                         self.phoneNumberControl.frame = CGRect(x: self.screenSize.width/2-self.phoneNumberControl.frame.width/2, y: self.phoneNumberControl.frame.origin.y, width: self.phoneNumberControl.frame.width, height: self.phoneNumberControl.frame.height)
                         
@@ -211,14 +225,14 @@ class loginView: LoginView, UITextFieldDelegate {
         )
     }
     
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
        
-        if(phoneNumberControl.textInput.isFirstResponder() == true)
+        if(phoneNumberControl.textInput.isFirstResponder == true)
         {
             phoneNumberControl.keypadDigitPressed(string)
         }
         
-        if(passcodeControl.textInput.isFirstResponder())
+        if(passcodeControl.textInput.isFirstResponder)
         {
             passcodeControl.keypadDigitPressed(string)
         }

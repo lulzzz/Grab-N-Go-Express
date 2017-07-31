@@ -13,7 +13,7 @@ class _paymentOptionsView: PaymentOptionsView {
     override func viewDidLoad() {
         //super.viewDidLoad()
 
-        formatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
+        formatter.numberStyle = NumberFormatter.Style.currency
         
         addFiveButton = addButton("big_button.png", action: "reloadFiveDollars", text: "$5", font: "Archer-Bold",
             fontSize: 25.0,
@@ -38,7 +38,7 @@ class _paymentOptionsView: PaymentOptionsView {
             cartTotalDisplay = cartTotalDisplay + 0.50
         }
         
-        let amountDue: String = formatter.stringFromNumber(cartTotalDisplay)!
+        let amountDue: String = formatter.string(from: NSNumber(value: cartTotalDisplay))!
         
         _ = addButton("big_button.png", action: "reloadTenDollars", text: amountDue, font: "Archer-Bold",
             fontSize: 25.0,
@@ -47,7 +47,7 @@ class _paymentOptionsView: PaymentOptionsView {
             width: view.frame.width-20,
             height: 100,
             textColor: 0x80392C)
-        addFiveButton.backgroundColor = UIColor.whiteColor()
+        addFiveButton.backgroundColor = UIColor.white
         // Do any additional setup after loading the view.
     }
 

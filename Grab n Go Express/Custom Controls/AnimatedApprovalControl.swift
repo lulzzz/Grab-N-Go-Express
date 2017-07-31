@@ -38,40 +38,40 @@ class AnimatedApprovalControl: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = UIColor.whiteColor()
+        backgroundColor = UIColor.white
         
         // Create a circle shape
         
-        ovalShapeLayer.strokeColor = UIColor.redColor().CGColor
-        ovalShapeLayer.fillColor = UIColor.blueColor().CGColor
+        ovalShapeLayer.strokeColor = UIColor.red.cgColor
+        ovalShapeLayer.fillColor = UIColor.blue.cgColor
         ovalShapeLayer.lineWidth = 4.0
         //ovalShapeLayer.lineDashPattern = [2, 3]
         let refreshRadius: CGFloat = 100
-        ovalShapeLayer.path = UIBezierPath(ovalInRect: CGRect(x: frame.size.width/2 - refreshRadius,
+        ovalShapeLayer.path = UIBezierPath(ovalIn: CGRect(x: frame.size.width/2 - refreshRadius,
             y: frame.size.height/2 - refreshRadius,
             width: 2 * refreshRadius,
-            height: 2 * refreshRadius)).CGPath
+            height: 2 * refreshRadius)).cgPath
         //layer.addSublayer(ovalShapeLayer)
         
-        hidden = true
+        isHidden = true
         completing_registrationLabel.text = "Completing Registrations"
         completing_registrationLabel.frame = CGRect(x: 0, y: 0,
             width: frame.width,
             height: frame.height)
-        completing_registrationLabel.textAlignment = .Center
+        completing_registrationLabel.textAlignment = .center
         //addSubview(completing_registrationLabel)
         
-        progressView = UIProgressView(progressViewStyle: UIProgressViewStyle.Default)
-        progressView?.frame = CGRectMake(25, frame.height - 100, frame.width-50, 100)
+        progressView = UIProgressView(progressViewStyle: UIProgressViewStyle.default)
+        progressView?.frame = CGRect(x: 25, y: frame.height - 100, width: frame.width-50, height: 100)
         addSubview(progressView!)
         
         // Add Label
         progressLabel = UILabel()
-        let frame = CGRectMake(center.x - 25, frame.height - 50, frame.width-50, 50)
+        let frame = CGRect(x: center.x - 25, y: frame.height - 50, width: frame.width-50, height: 50)
         progressLabel?.frame = frame
         //addSubview(progressLabel!)
         
-        NSTimer.scheduledTimerWithTimeInterval(0.10, target: self, selector: "updateProgress", userInfo: nil, repeats: true)
+        Timer.scheduledTimer(timeInterval: 0.10, target: self, selector: #selector(AnimatedApprovalControl.updateProgress), userInfo: nil, repeats: true)
         
     }
     
@@ -125,9 +125,9 @@ class AnimatedApprovalControl: UIView {
         let oldFrame = frame
         let newFrame = CGRect(x: 0, y: frame.height/2, width: frame.width, height: 0)
         frame = newFrame
-        hidden = false
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        isHidden = false
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.frame = oldFrame
                 
             }, completion:
@@ -148,8 +148,8 @@ class AnimatedApprovalControl: UIView {
     func animateOut(){
         // Animated the entire frame in
         let newFrame = CGRect(x: 0, y: frame.height/2, width: frame.width, height: 0)
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.frame = newFrame
                 self.alpha = 0.0
             }, completion:
@@ -164,7 +164,7 @@ class AnimatedApprovalControl: UIView {
         
         //first_nameLabel.text = "Thanks, " + registration.first_name + "\n\nIt'll just be a moment while we complete your registration"
         first_nameLabel.text = "Completing Registration"
-        first_nameLabel.textAlignment = .Center
+        first_nameLabel.textAlignment = .center
         last_nameLabel.text = registration.last_name
         cc_infoLabel.text = "Card Info: " + registration.cc_info
         zipcodeLabel.text = "Zipcode: " + registration.zipcode
@@ -195,13 +195,13 @@ class AnimatedApprovalControl: UIView {
     
     func wobbleLeft() {
         
-        _ = UIBezierPath(ovalInRect: CGRect(x: frame.size.width/2 - 100,
+        _ = UIBezierPath(ovalIn: CGRect(x: frame.size.width/2 - 100,
             y: frame.size.height/2 - 100,
             width: 0,
-            height: 0)).CGPath
+            height: 0)).cgPath
         
-        UIView.animateWithDuration(6.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 6.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 
                 //self.backgroundColor = UIColor.blueColor()
                 //self.ovalShapeLayer.fillColor = UIColor.redColor().CGColor
@@ -221,16 +221,16 @@ class AnimatedApprovalControl: UIView {
             return
         }
         
-       let path = UIBezierPath(ovalInRect: CGRect(x: frame.size.width/2 - 100,
+       let path = UIBezierPath(ovalIn: CGRect(x: frame.size.width/2 - 100,
             y: frame.size.height/2 - 100,
             width: 2 * 100,
-            height: 2 * 100)).CGPath
+            height: 2 * 100)).cgPath
         
-        UIView.animateWithDuration(10.0, animations: { () -> Void in
+        UIView.animate(withDuration: 10.0, animations: { () -> Void in
             self.ovalShapeLayer.opacity = 1.00
             self.ovalShapeLayer.path = path
-            }) { (finished) -> Void in
+            }, completion: { (finished) -> Void in
                 self.wobbleLeft()
-        }
+        }) 
     }
 }

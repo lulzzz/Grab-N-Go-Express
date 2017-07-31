@@ -63,7 +63,7 @@ class _inventoryViewViewController: _selfCheckoutView {
         itemDescriptionLabel.frame = CGRect(x: 0, y: startYPos, width: width, height: heightOfControls)
         itemDescriptionLabel.text = "Scan The Item To Inventory"
         itemDescriptionLabel.font = font
-        itemDescriptionLabel.textAlignment = .Center
+        itemDescriptionLabel.textAlignment = .center
         view.addSubview(itemDescriptionLabel)
         
         var yPos: CGFloat = startYPos + heightOfControls + distanceBetweenControls
@@ -72,7 +72,7 @@ class _inventoryViewViewController: _selfCheckoutView {
         inventoryOnShelfLabel.frame = CGRect(x: 0, y: yPos, width: width, height: heightOfControls)
         inventoryOnShelfLabel.text = "0"
         inventoryOnShelfLabel.font = font
-        inventoryOnShelfLabel.textAlignment = .Center
+        inventoryOnShelfLabel.textAlignment = .center
         
         view.addSubview(inventoryOnShelfLabel)
         
@@ -92,12 +92,12 @@ class _inventoryViewViewController: _selfCheckoutView {
         // Stepper Labels
         parMinStepperLabel.frame = CGRect(x: x, y: yPos+distanceBetweenControls, width: widthOfSteppers-(x*2), height: heightOfControls)
         parMinStepperLabel.text = "0"
-        parMinStepperLabel.textAlignment = .Center
+        parMinStepperLabel.textAlignment = .center
         //parMinStepper.font = font
         view.addSubview(parMinStepperLabel)
         
         parMaxStepperLabel.frame = CGRect(x: width-widthOfSteppers-x, y: yPos+distanceBetweenControls, width: widthOfSteppers-(x*2), height: heightOfControls)
-        parMaxStepperLabel.textAlignment = .Center
+        parMaxStepperLabel.textAlignment = .center
         parMaxStepperLabel.text = "0"
         view.addSubview(parMaxStepperLabel)
         
@@ -122,7 +122,7 @@ class _inventoryViewViewController: _selfCheckoutView {
         // Dispose of any resources that can be recreated.
     }
     
-    func addItemToInventory(product: Product)
+    func addItemToInventory(_ product: Product)
     {
         
     }

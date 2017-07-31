@@ -20,6 +20,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>17</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -27,6 +29,12 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Uses the camera to scan items</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Grab n Go</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Uses location data to determine where you are.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Archer-Bold.ttf</string>
@@ -51,12 +59,15 @@
 	<array>
 		<string>com.datecs.linea.pro.msr</string>
 		<string>com.datecs.linea.pro.bar</string>
+		<string>com.redpark.hobdb9v</string>
+		<string>com.redpark.ser45v</string>
+		<string>com.redpark.ser45</string>
+		<string>com.redpark.hobdb9</string>
+		<string>com.amanenterprises.hobbtser</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

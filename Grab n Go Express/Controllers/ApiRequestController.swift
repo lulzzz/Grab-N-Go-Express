@@ -14,8 +14,8 @@ import UIKit
 */
 
 protocol ApiResultsDelegate{
-    func barcodeScanned(product: Product)
-    func itemLookup(itemList: ItemLookup)
+    func barcodeScanned(_ product: Product)
+    func itemLookup(_ itemList: ItemLookup)
 }
 
 class ApiRequestController: JsonRequestController {
@@ -100,11 +100,15 @@ class ApiRequestController: JsonRequestController {
         // Do any additional setup after loading the view.
     }
 
-    func processErrors(jsonData: JSON)
+    func processErrors(_ jsonData: JSON)
     {
+        //print(jsonData);
+        
+        //return;
+        
         let error: NSNumber = jsonData["Error"].number!
         let action = jsonData["Action"].string
-        let errorInt: Int = error.integerValue
+        let errorInt: Int = error.intValue
         var alertText = errorDescriptions[errorInt]
         if let error_message = jsonData["error_message"].string
         {
@@ -133,8 +137,8 @@ class ApiRequestController: JsonRequestController {
         {
             let configView = ConfigurationView()
             configView.view.frame = view.frame
-            configView.view.backgroundColor = UIColor.whiteColor()
-            self.presentViewController(configView, animated: true, completion: nil)
+            configView.view.backgroundColor = UIColor.white
+            self.present(configView, animated: true, completion: nil)
         }
         //backgroundImageView.alpha = 0.50
         //errorAlertView.okButton.setTitle("Re-Enter", forState: .Normal)
@@ -159,25 +163,25 @@ class ApiRequestController: JsonRequestController {
     }
     
     // Setter functions
-    func setResourceURL(url: String)
+    func setResourceURL(_ url: String)
     {
         _url = url;
         bUrlIsSet = true
     }
 
-    func setResourceEndpoint(endpoint: String)
+    func setResourceEndpoint(_ endpoint: String)
     {
         _endpoint = endpoint
         bEndpointIsSet = true
     }
     
-    func setResourceParameter(parameter: String)
+    func setResourceParameter(_ parameter: String)
     {
         _parameter = parameter
         bParameterIsSet = true
     }
     
-    func setResourceID(id: Int)
+    func setResourceID(_ id: Int)
     {
         _id = id
         bIDIsSet = true
@@ -251,7 +255,7 @@ class ApiRequestController: JsonRequestController {
     
     */
     
-    func getProductDatabase(customerID: String) -> String
+    func getProductDatabase(_ customerID: String) -> String
     {
         // Here we're checking to make sure that expected parameters
         // were set.  If not, we're letting them know what was forgotton
@@ -328,52 +332,57 @@ class ApiRequestController: JsonRequestController {
         
     }
     
-    func checkPin(user: User) -> Bool
+    func checkPin(_ user: User) -> Bool
     {
         // contact the network and see if the pin number is correct
         let bValidCredentials: Bool = super.checkPin(user.phoneNumber, passcode: user.passcode)
         return bValidCredentials
     }
 
-    func setBaseParameters(user: User)
+    func setBaseParameters(_ user: User)
     {
-        addParameter("phone_num", value: user.phoneNumber)
-        addParameter("pin_num", value: user.passcode)
+        addParameter("phone_num", value: user.phoneNumber as AnyObject)
+        addParameter("pin_num", value: user.passcode as AnyObject)
     }
     
-    func loginRequest(user: User) -> Bool
+    func loginRequest(_ user: User) -> Bool
     {
-        addParameter("phone_num", value: user.phoneNumber)
-        addParameter("pin_num", value: user.passcode)
+        setResource("https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php")
+        addParameter("phone_num", value: user.phoneNumber as AnyObject)
+        addParameter("pin_num", value: user.passcode as AnyObject)
         
-        addParameter("action", value: "login")
+        addParameter("action", value: "login" as AnyObject)
         networkRequest(loginResult)
         return false
     }
     
-    func loginResult(jsonData: JSON)
+    func loginResult(_ jsonData: JSON)
     {
         
         
     }
     
-    func itemScanned(product: Product) -> Bool
+    func itemScanned(_ product: Product) -> Bool
     {
-        addParameter("action", value: "item_scanned")
-        addParameter("barcode", value: product.barcode)
+        print("itemScanned called")
+        setResource("https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php")
+        addParameter("action", value: "item_scanned" as AnyObject)
+        addParameter("barcode", value: product.barcode as AnyObject)
+        print(jsonDataObj);
         networkRequest(itemScannedResult)
         return true
     }
     
-    func itemLookup(product: String) -> Bool
+    func itemLookup(_ product: String) -> Bool
     {
-        addParameter("action", value: "item_lookup")
-        addParameter("barcode", value: product);
+        setResource("https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php")
+        addParameter("action", value: "item_lookup" as AnyObject)
+        addParameter("barcode", value: product as AnyObject);
         networkRequest(itemLookupResult);
         return true
     }
     
-    func itemLookupResult(jsonData: JSON)
+    func itemLookupResult(_ jsonData: JSON)
     {
          let itemList: ItemLookup = ItemLookup()
         for (key, value) in jsonData {
@@ -384,8 +393,10 @@ class ApiRequestController: JsonRequestController {
     }
     
     /* This is called after a network request is submitted with the "item_scanned" action set */
-    func itemScannedResult(jsonData: JSON)
+    func itemScannedResult(_ jsonData: JSON)
     {
+        print("itemScanned Result");
+        
         let error = jsonData["Error"]
         switch(error)
         {
@@ -395,20 +406,21 @@ class ApiRequestController: JsonRequestController {
                 product.description = jsonData["item_description"].string!
                 product.price = Double(jsonData["price"].double!)
                 product.tax["Sales Tax"] = Double(jsonData["tax"].double!)
+                print("Going to call shopping cart delegate")
                 shoppingCartDelegate?.barcodeScanned(product)
             break
     
             case 2000:
                 // Error handling here
                 let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: jsonData["Error Description"].string!)
-                errorAlertView.cancelButton.hidden = true
+                errorAlertView.cancelButton.isHidden = true
                 errorAlertView.centerOKButtonAnimated()
                 self.view.addSubview(errorAlertView)
             break
             
         default:
             let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "There was an error.  Try scanning the item again")
-            errorAlertView.cancelButton.hidden = true
+            errorAlertView.cancelButton.isHidden = true
             errorAlertView.centerOKButtonAnimated()
             self.view.addSubview(errorAlertView)
             break
@@ -416,107 +428,144 @@ class ApiRequestController: JsonRequestController {
         }
     }
     
-    func registerUser(registration: Registration)
+    func getLocationID()
     {
+        // Obtains the MongoDB "_id" parameter for the location with the serial number "100000010" etc
+        // Stores it for future use!
+    }
+    
+    func updateGPSCoordinates(_ gpsCoordinates: GPSCoordinates)
+    {
+        setResource("http://api.grabngo.market/api/locations/gps")
+        addParameter("latitude", value: gpsCoordinates.latitude as AnyObject)
+        addParameter("longitude", value: gpsCoordinates.longitude as AnyObject)
+        addParameter("_id", value: "57cba616f8d6371100a69581" as AnyObject)
+        networkRequest(updateGPSCoordinatesResult)
+    }
+    
+    func updateGPSCoordinatesResult(_ jsonStr: JSON)
+    {
+        
+    }
+    
+    func registerUser(_ registration: Registration)
+    {
+        setResource("https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php")
         resetJsonObj()
         // For now, set a timer to simulate contacting the network
         // to complete the registration process
-        addParameter("first_name", value: registration.first_name)
-        addParameter("last_name", value: registration.last_name)
-        addParameter("cc_num", value: registration.cc_info)
-        addParameter("exp_date", value: registration.exp_date)
-        addParameter("ccv", value: registration.ccv)
-        addParameter("pin_num", value: registration.passcode)
-        addParameter("phone_num", value: registration.phoneNumber)
-        addParameter("zipcode", value: registration.zipcode)
-        addParameter("action", value: "register")
+        addParameter("first_name", value: registration.first_name as AnyObject)
+        addParameter("last_name", value: registration.last_name as AnyObject)
+        addParameter("cc_num", value: registration.cc_info as AnyObject)
+        addParameter("exp_date", value: registration.exp_date as AnyObject)
+        addParameter("ccv", value: registration.ccv as AnyObject)
+        addParameter("pin_num", value: registration.passcode as AnyObject)
+        addParameter("phone_num", value: registration.phoneNumber as AnyObject)
+        addParameter("zipcode", value: registration.zipcode as AnyObject)
+        addParameter("action", value: "register" as AnyObject)
 
         networkRequest(registrationConfirmed)
     }
     
-    func updateUser(registration: Registration)
+    func updateUser(_ registration: Registration)
     {
+        setResource("https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php")
         resetJsonObj()
         // For now, set a timer to simulate contacting the network
         // to complete the registration process
-        addParameter("first_name", value: registration.first_name)
-        addParameter("last_name", value: registration.last_name)
-        addParameter("cc_num", value: registration.cc_info)
-        addParameter("exp_date", value: registration.exp_date)
-        addParameter("ccv", value: registration.ccv)
-        addParameter("pin_num", value: registration.passcode)
-        addParameter("phone_num", value: registration.phoneNumber)
-        addParameter("zipcode", value: registration.zipcode)
-        addParameter("action", value: "update")
+        addParameter("first_name", value: registration.first_name as AnyObject)
+        addParameter("last_name", value: registration.last_name as AnyObject)
+        addParameter("cc_num", value: registration.cc_info as AnyObject)
+        addParameter("exp_date", value: registration.exp_date as AnyObject)
+        addParameter("ccv", value: registration.ccv as AnyObject)
+        addParameter("pin_num", value: registration.passcode as AnyObject)
+        addParameter("phone_num", value: registration.phoneNumber as AnyObject)
+        addParameter("zipcode", value: registration.zipcode as AnyObject)
+        addParameter("action", value: "update" as AnyObject)
         
         networkRequest(registrationConfirmed)
     }
     
-    func completeTransaction(transaction: Transaction)
+    func completeTransaction(_ transaction: Transaction)
     {
         // The complete transaction function records in the remote
         // database the transaction that has been completed by the 
         // front end software.  This is a simple recording action
         // only.  The backend assumes that the information
-        addParameter("action", value: "transaction")
-        addParameter("transaction", value: transaction.toDictionary())
+        addParameter("action", value: "transaction" as AnyObject)
+        addParameter("transaction", value: transaction.toDictionary() as AnyObject)
         networkRequest(completeTransactionResult)
     }
     
-    func completeTransactionResult(jsonStr: JSON)
+    func completeTransactionResult(_ jsonStr: JSON)
     {
         
     }
     
-    func reloadAccount(reloadAmount: Double)
+    func reloadAccount(_ reloadAmount: Double)
     {
-        addParameter("action", value: "reload")
-        addParameter("amount", value: reloadAmount)
+        setResource("https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php")
+        addParameter("action", value: "reload" as AnyObject)
+        addParameter("amount", value: reloadAmount as AnyObject)
         networkRequest(reloadAccountResult)
     }
     
+    func addCashCreditToBalance(_ billValue: Double)
+    {
+        setResource("https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php")
+        addParameter("action", value: "cashload" as AnyObject)
+        addParameter("amount", value: billValue as AnyObject)
+        networkRequest(addCashCreditToBalanceResult)
+    }
+
+    func addCashCreditToBalanceResult(_ jsonStr: JSON)
+    {
+        
+    }
+    
     /* Callback function after network request completes */
-    func reloadAccountResult(jsonStr: JSON)
+    func reloadAccountResult(_ jsonStr: JSON)
     {
         
     }
     
-    func registerUserCompleted(jsonStr: String)
+    func registerUserCompleted(_ jsonStr: String)
     {
         
     }
     
-    func finishIncompleteRegistration(registration: Registration)
+    func finishIncompleteRegistration(_ registration: Registration)
     {
         resetJsonObj()
-        addParameter("action", value: "finish_incomplete_registration")
+        addParameter("action", value: "finish_incomplete_registration" as AnyObject)
         // For now, set a timer to simulate contacting the network
         // to complete the registration process
-        addParameter("first_name", value: registration.first_name)
-        addParameter("last_name", value: registration.last_name)
-        addParameter("cc_num", value: registration.cc_info)
-        addParameter("exp_date", value: registration.exp_date)
-        addParameter("ccv", value: registration.ccv)
-        addParameter("pin_num", value: registration.passcode)
-        addParameter("phone_num", value: registration.phoneNumber)
-        addParameter("zipcode", value: registration.zipcode)
-        addParameter("action", value: "register")
+        addParameter("first_name", value: registration.first_name as AnyObject)
+        addParameter("last_name", value: registration.last_name as AnyObject)
+        addParameter("cc_num", value: registration.cc_info as AnyObject)
+        addParameter("exp_date", value: registration.exp_date as AnyObject)
+        addParameter("ccv", value: registration.ccv as AnyObject)
+        addParameter("pin_num", value: registration.passcode as AnyObject)
+        addParameter("phone_num", value: registration.phoneNumber as AnyObject)
+        addParameter("zipcode", value: registration.zipcode as AnyObject)
+        addParameter("action", value: "register" as AnyObject)
         networkRequest(registrationConfirmed)
     }
     
-    func undoRegisterUser(registration: Registration)
+    func undoRegisterUser(_ registration: Registration)
     {
-        addParameter("action", value: "undo_register_user")
-        addParameter("phone_num", value: registration.phoneNumber)
+        setResource("https://www.atomcreativecorp.com/adamsapps/SelfCheckout/Production/2.0/SelfCheckout.php")
+        addParameter("action", value: "undo_register_user" as AnyObject)
+        addParameter("phone_num", value: registration.phoneNumber as AnyObject)
         networkRequest(undoRegisterUserConfirmed)
     }
     
-    func undoRegisterUserConfirmed(jsonData: JSON)
+    func undoRegisterUserConfirmed(_ jsonData: JSON)
     {
         
     }
     
-    func registrationConfirmed(jsonData: JSON)
+    func registrationConfirmed(_ jsonData: JSON)
     {
         //print("Registration Confirmed")
     }

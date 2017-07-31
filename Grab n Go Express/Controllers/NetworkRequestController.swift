@@ -34,20 +34,20 @@ class NetworkRequestController: UIElementController {
         super.viewDidLoad()
 
         networkLoadingView.frame  = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 0)
-        networkLoadingView.backgroundColor = UIColor.orangeColor()
+        networkLoadingView.backgroundColor = UIColor.orange
         networkLoadingView.text = "Loading"
-        networkLoadingView.textAlignment = .Center
-        networkLoadingView.hidden = false
-        networkLoadingView.textColor = UIColor.whiteColor()
+        networkLoadingView.textAlignment = .center
+        networkLoadingView.isHidden = false
+        networkLoadingView.textColor = UIColor.white
         view.addSubview(networkLoadingView)
         // Do any additional setup after loading the view.
     }
 
     func displayLoading()
     {
-        view.bringSubviewToFront(networkLoadingView)
-        UIView.animateWithDuration(0.3, delay: 1.0,
-            options: .CurveEaseOut, animations: {
+        view.bringSubview(toFront: networkLoadingView)
+        UIView.animate(withDuration: 0.3, delay: 1.0,
+            options: .curveEaseOut, animations: {
                 self.networkLoadingView.frame = CGRect(x: 0, y: self.view.frame.height-25, width: self.view.frame.width, height: 25)
             }, completion: nil)
         
@@ -55,8 +55,8 @@ class NetworkRequestController: UIElementController {
     
     func hideLoading()
     {
-        UIView.animateWithDuration(0.3, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.3, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.networkLoadingView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: 0)
             }, completion: nil)
     }
@@ -67,12 +67,12 @@ class NetworkRequestController: UIElementController {
     }
     
     // This is expected to be called by a subclass
-    func setResource(urlResource: String)
+    func setResource(_ urlResource: String)
     {
         self.urlResource = urlResource
     }
 
-    func addParameter(parameter: String, value: AnyObject)
+    func addParameter(_ parameter: String, value: AnyObject)
     {
         jsonDataObj[parameter] = value
     }
@@ -83,16 +83,18 @@ class NetworkRequestController: UIElementController {
     
     }
     
-    func networkRequest(completion: (JSON) -> Void)
+    func networkRequest(_ completion: @escaping (JSON) -> Void)
     {
         networkRequest(completion, timeout: timeout)
     }
     
-    func networkRequest(completion: (JSON) -> Void, timeout: () -> Void)
+    var retryRequests: Int = 0;
+    
+    func networkRequest(_ completion: @escaping (JSON) -> Void, timeout: @escaping () -> Void)
     {
         
         //#if DEBUG
-            let locationSerial: String = NSUserDefaults.standardUserDefaults().objectForKey("location_serial") as! String!
+            let locationSerial: String = UserDefaults.standard.object(forKey: "location_serial") as! String!
             if locationSerial == "0"
             {
                 print("We're going to have a problem...start the configuration view")
@@ -105,42 +107,50 @@ class NetworkRequestController: UIElementController {
         //NSUserDefaults.standardUserDefaults().objectForKey("location_serial") as! String!
         //#endif
         
-        addParameter("location_upc_identifier", value: locationSerial)
+        addParameter("location_upc_identifier", value: locationSerial as AnyObject)
         
         let params = jsonDataObj
         //print(params) as! AnyObject
         //let jsonData = try! NSJSONSerialization.dataWithJSONObject(params, options: [])
-        let request = NSMutableURLRequest(URL: NSURL(string: urlResource)!)
+        let request = NSMutableURLRequest(url: URL(string: urlResource)!)
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.HTTPMethod = "POST"
+        request.httpMethod = "POST"
         request.timeoutInterval = 10
         
-        print(urlResource)
+        
+        print("---here---")
+        print( JSON(params) );
+        print("---here 2---");
         
         do {
-            request.HTTPBody = try NSJSONSerialization.dataWithJSONObject(params, options: [])
-            print(params)
+            request.httpBody = try JSONSerialization.data(withJSONObject: params, options: [])
+            
         } catch {
         }
         
-        let task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler:
+        let task = URLSession.shared.dataTask(with: request as URLRequest, completionHandler:
             {
                 data, response, error in
 
+                print(error)
                 if error != nil {
-                    dispatch_async(dispatch_get_main_queue(), {
+                    DispatchQueue.main.async(execute: {
                         timeout()
+                        
+                        self.retryRequests = self.retryRequests + 1;
+                        if(self.retryRequests < 3)
+                        {
+                            self.networkRequest(completion)
+                        }
                     })
-                    
-                    
-                    
+
                 } else {
                     // Should put this in a try catch
                     let json = JSON(data: data!)
-                    
-                    dispatch_async(dispatch_get_main_queue(), {
+                    self.retryRequests = 0;
+                    DispatchQueue.main.async(execute: {
                         self.hideLoading()
                         print(json)
                         completion(json)

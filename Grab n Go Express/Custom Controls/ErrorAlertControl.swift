@@ -9,16 +9,16 @@
 import UIKit
 
 @objc protocol ErrorControlDelegate{
-    optional func errorOK()
-    optional func errorCancel()
+    @objc optional func errorOK()
+    @objc optional func errorCancel()
 }
 
 class ErrorAlertControl: UIView {
 
     var delegate: ErrorControlDelegate?
     
-    let okButton   = UIButton(type: UIButtonType.System) as UIButton
-    let cancelButton   = UIButton(type: UIButtonType.System) as UIButton
+    let okButton   = UIButton(type: UIButtonType.system) as UIButton
+    let cancelButton   = UIButton(type: UIButtonType.system) as UIButton
     let label = UILabel()
     
     override init (frame : CGRect) {
@@ -26,10 +26,10 @@ class ErrorAlertControl: UIView {
         
         super.init(frame : frame)
         
-        let screenSize: CGRect = UIScreen.mainScreen().bounds
+        let screenSize: CGRect = UIScreen.main.bounds
         
 // If we're in an iPad
-if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+if(UIDevice.current.userInterfaceIdiom == .pad)
 {
 self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
 label.font =  UIFont(name: "CardenioModern-Bold", size: 61.0)
@@ -42,9 +42,9 @@ label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
 }
 
         //self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
-        backgroundColor = UIColor.whiteColor()
+        backgroundColor = UIColor.white
         //layer.cornerRadius = 10.0
-        layer.borderColor = UIColor.grayColor().CGColor
+        layer.borderColor = UIColor.gray.cgColor
         layer.borderWidth = 0.5
         clipsToBounds = true
         
@@ -53,25 +53,25 @@ label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
         let btnSpacing: CGFloat = 5
         
         
-        okButton.frame = CGRectMake(self.frame.width/2-btnWidth/2-btnWidth/2-btnSpacing, self.frame.height-btnHeight-btnSpacing-25, btnWidth, btnHeight)
-        okButton.backgroundColor = UIColor.whiteColor()
-        okButton.layer.borderColor = UIColor.blackColor().CGColor
+        okButton.frame = CGRect(x: self.frame.width/2-btnWidth/2-btnWidth/2-btnSpacing, y: self.frame.height-btnHeight-btnSpacing-25, width: btnWidth, height: btnHeight)
+        okButton.backgroundColor = UIColor.white
+        okButton.layer.borderColor = UIColor.black.cgColor
         okButton.layer.borderWidth = 1.00
-        okButton.setTitle("OK", forState: UIControlState.Normal)
-        okButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
+        okButton.setTitle("OK", for: UIControlState())
+        okButton.setTitleColor(UIColor.black, for: UIControlState())
         okButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 50.0)
-        okButton.addTarget(self, action: "ok", forControlEvents: UIControlEvents.TouchUpInside)
+        okButton.addTarget(self, action: #selector(ErrorAlertControl.ok), for: UIControlEvents.touchUpInside)
         addSubview(okButton)
         
-        cancelButton.frame = CGRectMake(self.frame.width/2-btnWidth/2+btnWidth/2+btnSpacing, self.frame.height-btnHeight-btnSpacing-25, btnWidth, 50)
+        cancelButton.frame = CGRect(x: self.frame.width/2-btnWidth/2+btnWidth/2+btnSpacing, y: self.frame.height-btnHeight-btnSpacing-25, width: btnWidth, height: 50)
         cancelButton.backgroundColor = UIColor(red: 237/255, green: 28/255, blue: 36/255, alpha: 1.0)
-        cancelButton.setTitle("CANCEL", forState: UIControlState.Normal)
+        cancelButton.setTitle("CANCEL", for: UIControlState())
         cancelButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 36.0)
-        cancelButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        cancelButton.addTarget(self, action: "cancel", forControlEvents: UIControlEvents.TouchUpInside)
+        cancelButton.setTitleColor(UIColor.white, for: UIControlState())
+        cancelButton.addTarget(self, action: #selector(ErrorAlertControl.cancel), for: UIControlEvents.touchUpInside)
         addSubview(cancelButton)
         
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Phone)
+        if(UIDevice.current.userInterfaceIdiom == .phone)
         {
             // If we're in an iPhone
             //self.frame = CGRect(x: 0, y: screenSize.height/2-screenSize.height/4, width: screenSize.width, height: screenSize.height/2)
@@ -79,16 +79,16 @@ label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
             
             //label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height/2)
             
-            okButton.frame = CGRectMake(self.frame.width/2-btnWidth/2, self.frame.height-btnHeight-btnSpacing-btnHeight-5, btnWidth, btnHeight)
+            okButton.frame = CGRect(x: self.frame.width/2-btnWidth/2, y: self.frame.height-btnHeight-btnSpacing-btnHeight-5, width: btnWidth, height: btnHeight)
             
-            cancelButton.frame = CGRectMake(self.frame.width/2-btnWidth/2, self.frame.height-btnHeight-btnSpacing, btnWidth, btnHeight)
+            cancelButton.frame = CGRect(x: self.frame.width/2-btnWidth/2, y: self.frame.height-btnHeight-btnSpacing, width: btnWidth, height: btnHeight)
         }
         
-        label.backgroundColor = UIColor.clearColor()
+        label.backgroundColor = UIColor.clear
         label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
-        label.textAlignment = .Center
+        label.textAlignment = .center
         label.numberOfLines = 0
-        label.textColor = UIColor.blackColor()
+        label.textColor = UIColor.black
         addSubview(label)
         superview?.alpha = 0.00
         //superview?.alpha = 0.50
@@ -103,8 +103,8 @@ label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
     
     func centerCancelButtonAnimated()
     {
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.label.alpha = 1.0
                 self.cancelButton.alpha = 1.0
                 self.cancelButton.frame = CGRect(x: self.frame.width/2-self.cancelButton.frame.width/2, y: self.cancelButton.frame.origin.y, width: self.cancelButton.frame.width, height: self.cancelButton.frame.height)
@@ -114,8 +114,8 @@ label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
     
     func centerOKButtonAnimated()
     {
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.label.alpha = 1.0
                 self.cancelButton.alpha = 0.0
                 self.okButton.frame = CGRect(x: self.frame.width/2-self.cancelButton.frame.width/2, y: self.cancelButton.frame.origin.y, width: self.cancelButton.frame.width, height: self.cancelButton.frame.height)

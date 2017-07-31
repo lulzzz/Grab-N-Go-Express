@@ -11,5 +11,7 @@
 
 #import "DTDevices.h"
 #import <ScanditBarcodeScanner/ScanditBarcodeScanner.h>
+#import "RscMgr.h"
+#import "redparkSerial.h"
 
 #endif /* Header_Bridging_Header_h */

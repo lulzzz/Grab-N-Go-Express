@@ -9,26 +9,120 @@
 import UIKit
 
 @objc protocol RegisterUserControlDelegate{
-    optional func errorOK()
-    optional func errorCancel()
+    @objc optional func errorOK()
+    @objc optional func errorCancel()
     func registrationCompleted()
 }
 
+class WizardControl: UIView {
 
-class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
+    var screenSize: CGRect = CGRect()
     
-    
-    var biPad = false;
-    
-    var delegate: RegisterUserControlDelegate?
-    
-    var dtdevices: DTDevices = DTDevices()
-    
-    let okButton   = UIButton(type: UIButtonType.System) as UIButton
-    let cancelButton   = UIButton(type: UIButtonType.System) as UIButton
+    let okButton   = UIButton(type: UIButtonType.system) as UIButton
+    let cancelButton   = UIButton(type: UIButtonType.system) as UIButton
+    let cashOnlyButton = UIButton(type: UIButtonType.system) as UIButton
     let label = UILabel()
     let inputTextField = UITextField()
     
+    var biPad = false;
+    
+    let btnWidth: CGFloat = 210
+    let btnHeight: CGFloat = 52
+    let btnSpacing: CGFloat = 5
+    
+    override init (frame : CGRect) {
+        
+        super.init(frame : frame)
+        
+        screenSize = UIScreen.main.bounds
+        
+        // If we're in an iPad
+        if(biPad == true)
+        {
+            self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
+            label.font =  UIFont(name: "CardenioModern-Bold", size: 61.0)
+            
+            label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
+            
+            okButton.frame = CGRect(x: self.frame.width/2-btnWidth/2-btnWidth/2-btnSpacing, y: self.frame.height-btnHeight-btnSpacing-25, width: btnWidth, height: btnHeight)
+            
+            cancelButton.frame = CGRect(x: self.frame.width/2-btnWidth/2+btnWidth/2+btnSpacing, y: self.frame.height-btnHeight-btnSpacing-25, width: btnWidth, height: 50)
+            
+            cashOnlyButton.frame = CGRect(x: self.frame.width/2-btnWidth/2+btnWidth/2+btnSpacing, y: self.frame.height-btnHeight-btnSpacing-25-75, width: btnWidth, height: 50)
+            
+            
+        }
+        else
+        {
+            // If we're in an iPhone
+            self.frame = CGRect(x: 0, y: screenSize.height/2-screenSize.height/4, width: screenSize.width, height: screenSize.height/2)
+            label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
+            
+            label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height/2)
+            
+            okButton.frame = CGRect(x: self.frame.width/2-btnWidth/2, y: self.frame.height-btnHeight-btnSpacing-btnHeight-5, width: btnWidth, height: btnHeight)
+            
+            cancelButton.frame = CGRect(x: self.frame.width/2-btnWidth/2, y: self.frame.height-btnHeight-btnSpacing, width: btnWidth, height: btnHeight)
+            
+            cashOnlyButton.frame = CGRect(x: self.frame.width/2-btnWidth/2, y: self.frame.height-btnHeight-btnSpacing, width: btnWidth, height: btnHeight)
+            
+            inputTextField.isHidden = true
+        }
+        
+        backgroundColor = UIColor.white
+        layer.borderColor = UIColor.gray.cgColor
+        layer.borderWidth = 0.5
+        clipsToBounds = true
+        
+        okButton.backgroundColor = UIColor.white
+        okButton.layer.borderColor = UIColor.black.cgColor
+        okButton.layer.borderWidth = 1.00
+        okButton.setTitle("OK", for: UIControlState())
+        okButton.setTitleColor(UIColor.black, for: UIControlState())
+        okButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 50.0)
+        okButton.addTarget(self, action: #selector(RegisterUserControl.ok), for: UIControlEvents.touchUpInside)
+        addSubview(okButton)
+        
+        cancelButton.backgroundColor = UIColor(red: 237/255, green: 28/255, blue: 36/255, alpha: 1.0)
+        cancelButton.setTitle("CANCEL", for: UIControlState())
+        cancelButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 36.0)
+        cancelButton.setTitleColor(UIColor.white, for: UIControlState())
+        cancelButton.addTarget(self, action: #selector(RegisterUserControl.cancel), for: UIControlEvents.touchUpInside)
+        addSubview(cancelButton)
+        
+        cashOnlyButton.backgroundColor = UIColor(red: 237/255, green: 28/255, blue: 36/255, alpha: 1.0)
+        cashOnlyButton.setTitle("CASH ONLY", for: UIControlState())
+        cashOnlyButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 36.0)
+        cashOnlyButton.setTitleColor(UIColor.white, for: UIControlState())
+        //cashOnlyButton.isHidden = true;
+        cashOnlyButton.addTarget(self, action: #selector(RegisterUserControl.cashOnly), for: UIControlEvents.touchUpInside)
+        //addSubview(cashOnlyButton)
+        
+        label.backgroundColor = UIColor.clear
+        
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.text = "Change label to your initial instructions"
+        
+        label.textColor = UIColor.black
+        addSubview(label)
+        superview?.alpha = 0.00
+    }
+    
+    
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+}
+
+class RegisterUserControl: WizardControl, KeypadControlDelegate, DTDeviceDelegate {
+    
+        var delegate: RegisterUserControlDelegate?
+    
+    var dtdevices: DTDevices = DTDevices()
+
     let swipedData: String = ""
     
     var track1: String = ""
@@ -52,8 +146,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     var registration: Registration!
     
-    var screenSize: CGRect = CGRect()
-    
+
     
     
     override init (frame : CGRect) {
@@ -61,78 +154,9 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         super.init(frame : frame)
         
         registration = Registration()
-        
-        let screenSize: CGRect = UIScreen.mainScreen().bounds
-        
         keypadControl.delegate = self
-        label.numberOfLines = 0
-        
-        self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
-        
-        let btnWidth: CGFloat = 210
-        let btnHeight: CGFloat = 52
-        let btnSpacing: CGFloat = 5
-        
-        // If we're in an iPad
-        if(biPad == true)
-        {
-            self.frame = CGRect(x: 0, y: screenSize.height/3, width: screenSize.width, height: screenSize.height/3)
-            label.font =  UIFont(name: "CardenioModern-Bold", size: 61.0)
-            
-            label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
-            
-        okButton.frame = CGRectMake(self.frame.width/2-btnWidth/2-btnWidth/2-btnSpacing, self.frame.height-btnHeight-btnSpacing-25, btnWidth, btnHeight)
-            
-        cancelButton.frame = CGRectMake(self.frame.width/2-btnWidth/2+btnWidth/2+btnSpacing, self.frame.height-btnHeight-btnSpacing-25, btnWidth, 50)
-        }
-        else
-        {
-            // If we're in an iPhone
-            self.frame = CGRect(x: 0, y: screenSize.height/2-screenSize.height/4, width: screenSize.width, height: screenSize.height/2)
-            label.font =  UIFont(name: "CardenioModern-Bold", size: 30.0)
-            
-            label.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height/2)
-            
-            okButton.frame = CGRectMake(self.frame.width/2-btnWidth/2, self.frame.height-btnHeight-btnSpacing-btnHeight-5, btnWidth, btnHeight)
-            
-            cancelButton.frame = CGRectMake(self.frame.width/2-btnWidth/2, self.frame.height-btnHeight-btnSpacing, btnWidth, btnHeight)
-            inputTextField.hidden = true
-        }
-        
-        backgroundColor = UIColor.whiteColor()
-        layer.borderColor = UIColor.grayColor().CGColor
-        layer.borderWidth = 0.5
-        clipsToBounds = true
-
-        okButton.backgroundColor = UIColor.whiteColor()
-        okButton.layer.borderColor = UIColor.blackColor().CGColor
-        okButton.layer.borderWidth = 1.00
-        okButton.setTitle("OK", forState: UIControlState.Normal)
-        okButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        okButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 50.0)
-        okButton.addTarget(self, action: "ok", forControlEvents: UIControlEvents.TouchUpInside)
-        addSubview(okButton)
-        
-        cancelButton.backgroundColor = UIColor(red: 237/255, green: 28/255, blue: 36/255, alpha: 1.0)
-        cancelButton.setTitle("CANCEL", forState: UIControlState.Normal)
-        cancelButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 36.0)
-        cancelButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        cancelButton.addTarget(self, action: "cancel", forControlEvents: UIControlEvents.TouchUpInside)
-        addSubview(cancelButton)
-        
-        label.backgroundColor = UIColor.clearColor()
-        
-        label.textAlignment = .Center
-        label.numberOfLines = 0
         label.text = "Registration is quick and easy\nIt takes less than a minute"
-       
-        label.textColor = UIColor.blackColor()
-        addSubview(label)
-        superview?.alpha = 0.00
 
-        dtdevices.addDelegate(self)
-        dtdevices.connect()
-        
     }
     
     convenience init(errorText: String)
@@ -143,8 +167,8 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     func ok()
     {
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.label.alpha = 0.0
                 //self.okButton.alpha = 0.0
                 
@@ -166,11 +190,12 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     func centerCancelButtonAnimated()
     {
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.label.alpha = 1.0
                 self.cancelButton.alpha = 1.0
                 self.cancelButton.frame = CGRect(x: self.frame.width/2-self.cancelButton.frame.width/2, y: self.cancelButton.frame.origin.y, width: self.cancelButton.frame.width, height: self.cancelButton.frame.height)
+
                 
             }, completion: nil)
     }
@@ -196,8 +221,8 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         case .justStarted:
             currentState = .creditCardSwiped
             rVal = creditCardSwipedText
-            UIView.animateWithDuration(0.5, delay: 0.0,
-                options: .CurveEaseOut, animations: {
+            UIView.animate(withDuration: 0.5, delay: 0.0,
+                options: .curveEaseOut, animations: {
                     self.label.alpha = 1.0
                     self.cancelButton.alpha = 1.0
                     self.okButton.alpha = 0.0
@@ -219,18 +244,18 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             setFrameC()
             self.okButton.alpha = 0.0
             addSubview(keypadControl)
-            UIView.animateWithDuration(0.5, delay: 0.0,
-                options: .CurveEaseOut, animations: {
+            UIView.animate(withDuration: 0.5, delay: 0.0,
+                options: .curveEaseOut, animations: {
                     self.setFrameA()
                     
                     self.setFrameD()
                     
                     self.cancelButton.frame.origin.y = self.frame.height-self.cancelButton.frame.height-22
                     self.inputTextField.frame = CGRect(x: self.label.frame.origin.x, y: self.label.frame.height, width: self.frame.width, height: 75)
-                    self.inputTextField.backgroundColor = UIColor.whiteColor()
-                    self.inputTextField.textAlignment = .Center
+                    self.inputTextField.backgroundColor = UIColor.white
+                    self.inputTextField.textAlignment = .center
                     self.inputTextField.font = UIFont(name: "Archer-Bold", size: 68)
-                    self.inputTextField.textColor = UIColor.blackColor()
+                    self.inputTextField.textColor = UIColor.black
                     
                     self.addSubview(self.inputTextField)
                 }, completion:
@@ -254,6 +279,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             
         case .manualEnterCreditCard:
             rVal = "Please enter your credit card number"
+            
             self.label.text = rVal
             self.setFrameF()
             break
@@ -274,8 +300,16 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     {
         
         delegate?.errorCancel!()
-        hidden = true
+        isHidden = true
         removeFromSuperview()
+    }
+    
+    func cashOnly()
+    {
+        registration.first_name = "Anonymous"
+        registration.last_name = "Anonymous"
+        delegate?.registrationCompleted()
+        cancel()
     }
     
     func setFrameA()
@@ -287,7 +321,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         }
         else
         {
-            let screenSize: CGRect = UIScreen.mainScreen().bounds
+            let screenSize: CGRect = UIScreen.main.bounds
             self.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.height)
         }
     }
@@ -327,8 +361,8 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         setFrameC()
         self.okButton.alpha = 0.0
         addSubview(keypadControl)
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 // This is a hack
                 if(self.bResizeFrame == true)
                 {
@@ -338,10 +372,10 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                 //self.label.frame = CGRect(x: self.label.frame.origin.x, y: 0, width: self.frame.width, height: 120)
                 self.cancelButton.frame.origin.y = self.frame.height-self.cancelButton.frame.height-22
                 self.inputTextField.frame = CGRect(x: self.label.frame.origin.x, y: self.label.frame.height, width: self.frame.width, height: 75)
-                self.inputTextField.backgroundColor = UIColor.whiteColor()
-                self.inputTextField.textAlignment = .Center
+                self.inputTextField.backgroundColor = UIColor.white
+                self.inputTextField.textAlignment = .center
                 self.inputTextField.font = UIFont(name: "Archer-Bold", size: 68)
-                self.inputTextField.textColor = UIColor.blackColor()
+                self.inputTextField.textColor = UIColor.black
                 self.addSubview(self.inputTextField)
                 self.label.alpha = 1.0
                 self.cancelButton.alpha = 1.0
@@ -359,18 +393,18 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         setFrameC()
         self.okButton.alpha = 0.0
         addSubview(keypadControl)
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.setFrameA()
                 
                 self.setFrameD()
                 
                 self.cancelButton.frame.origin.y = self.frame.height-self.cancelButton.frame.height-22
                 self.inputTextField.frame = CGRect(x: self.label.frame.origin.x, y: self.label.frame.height, width: self.frame.width, height: 75)
-                self.inputTextField.backgroundColor = UIColor.whiteColor()
-                self.inputTextField.textAlignment = .Center
+                self.inputTextField.backgroundColor = UIColor.white
+                self.inputTextField.textAlignment = .center
                 self.inputTextField.font = UIFont(name: "Archer-Bold", size: 68)
-                self.inputTextField.textColor = UIColor.blackColor()
+                self.inputTextField.textColor = UIColor.black
                 
                 self.addSubview(self.inputTextField)
             }, completion:
@@ -388,7 +422,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
     
     var bClearTextLabel = true
     
-    func keypadDigitPressed(digitPressed: String) {
+    func keypadDigitPressed(_ digitPressed: String) {
         
         if(biPad == true)
         {
@@ -413,8 +447,8 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                 registration.zipcode = inputTextField.text!
                 inputTextField.text = "";
 
-                UIView.animateWithDuration(0.5, delay: 0.0,
-                    options: .CurveEaseOut, animations: {
+                UIView.animate(withDuration: 0.5, delay: 0.0,
+                    options: .curveEaseOut, animations: {
                         self.label.alpha = 0.0
                         //self.okButton.alpha = 0.0
                         
@@ -430,8 +464,8 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         {
             // For AMEX cards, allow 4
             var ccvCount = 3
-            let index = registration.cc_info.startIndex.advancedBy(2)
-            let amexStr = registration.cc_info.substringToIndex(index)
+            let index = registration.cc_info.characters.index(registration.cc_info.startIndex, offsetBy: 2)
+            let amexStr = registration.cc_info.substring(to: index)
             if(amexStr == "34")
             {
              ccvCount = 4;
@@ -445,8 +479,8 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             {
                 registration.ccv = inputTextField.text!
                 
-                UIView.animateWithDuration(0.5, delay: 0.0,
-                    options: .CurveEaseOut, animations: {
+                UIView.animate(withDuration: 0.5, delay: 0.0,
+                    options: .curveEaseOut, animations: {
                         self.setFrameB()
                         
                     }, completion: {_ in
@@ -464,6 +498,9 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
 
         if(currentState == registrationState.manualEnterCreditCard)
         {
+            // Display button - Cash Only Account
+            //var cashOnlyAccount =
+
             if(inputTextField.text?.characters.count==4)
             {
                 inputTextField.text = inputTextField.text! + "-"
@@ -486,7 +523,7 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
             {
                 inputTextField.text = inputTextField.text! + "-"
                 label.text = inputTextField.text
-                registration.cc_info = label.text!.stringByReplacingOccurrencesOfString("-", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                registration.cc_info = label.text!.replacingOccurrences(of: "-", with: "", options: NSString.CompareOptions.literal, range: nil)
                 currentState = .manualEnterExpirationDate
                 label.text = getNextStateText()
                 bClearTextLabel = true
@@ -512,13 +549,13 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                 currentState = .creditCardSwiped
                 
                 //registration.expYear = inputTextField.text!.substringFromIndex(inputTextField.text!.startIndex, 3)
-                let newStartIndex = inputTextField.text!.startIndex.advancedBy(3)
-                let newEndIndex = inputTextField.text!.startIndex.advancedBy(5)
+                let newStartIndex = inputTextField.text!.characters.index(inputTextField.text!.startIndex, offsetBy: 3)
+                let newEndIndex = inputTextField.text!.characters.index(inputTextField.text!.startIndex, offsetBy: 5)
                 
-                registration.expYear = inputTextField.text!.substringWithRange(newStartIndex..<newEndIndex)
+                registration.expYear = inputTextField.text!.substring(with: newStartIndex..<newEndIndex)
                 registration.exp_date = registration.expYear+registration.expMonth
                 label.text = getNextStateText()
-                if(UIDevice.currentDevice().userInterfaceIdiom != .Pad)
+                if(UIDevice.current.userInterfaceIdiom != .pad)
                 {
                     bClearTextLabel = true
                 }
@@ -533,22 +570,22 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
         
     }
     
-    func barcodeData(barcode: String!, type: Int32) {
+    func barcodeData(_ barcode: String!, type: Int32) {
         label.text = barcode
     }
     
-    func magneticCardData(track1: String!, track2: String!, track3: String!) {
+    func magneticCardData(_ track1: String!, track2: String!, track3: String!) {
         
         
         if let temp = track1
         {
 
-            let fullName = temp.componentsSeparatedByString("^")
+            let fullName = temp.components(separatedBy: "^")
         
-            var indexOfStartSentinal = temp.characters.indexOf("%")
-            indexOfStartSentinal = indexOfStartSentinal?.advancedBy(2)
+            var indexOfStartSentinal = temp.characters.index(of: "%")
+            //indexOfStartSentinal = <#T##Collection corresponding to your index##Collection#>.index(indexOfStartSentinal?, offsetBy: 2)
 
-            let indexOfFirstCaret = temp.characters.indexOf("^")
+            let indexOfFirstCaret = temp.characters.index(of: "^")
             var indexOfSecondCaret = 0
             var bCont: Bool = false
             for character in temp.characters {
@@ -563,34 +600,31 @@ class RegisterUserControl: UIView, KeypadControlDelegate, DTDeviceDelegate {
                     break
                     }
                 }
-                ++indexOfSecondCaret
+                indexOfSecondCaret += 1
             }
 
-            let expirationDateIndex = indexOfStartSentinal?.advancedBy(indexOfSecondCaret-1)
-            let expirationDateEndIndex = expirationDateIndex?.advancedBy(4)
+            //let expirationDateIndex = <#T##Collection corresponding to your index##Collection#>.index(indexOfStartSentinal?, offsetBy: indexOfSecondCaret-1)
+            //let expirationDateEndIndex = <#T##String.CharacterView corresponding to your index##String.CharacterView#>.index(expirationDateIndex?, offsetBy: 4)
         
-            var indexOfSlash = fullName[1].characters.indexOf("/")
+            var indexOfSlash = fullName[1].characters.index(of: "/")
             let indexOfEnd = fullName[1].characters.endIndex
-            let lastName = fullName[1].substringToIndex(indexOfSlash!)
-            indexOfSlash = indexOfSlash?.advancedBy(1)
-            let lastNameRange = Range<String.Index>(start: indexOfSlash!, end: indexOfEnd)
-            let firstName = fullName[1].substringWithRange(lastNameRange)
+            let lastName = fullName[1].substring(to: indexOfSlash!)
+            //indexOfSlash = <#T##Collection corresponding to your index##Collection#>.index(indexOfSlash?, offsetBy: 1)
+            let lastNameRange = (indexOfSlash! ..< indexOfEnd)
+            let firstName = fullName[1].substring(with: lastNameRange)
         
-            let myRange = Range<String.Index>(start: indexOfStartSentinal!, end: indexOfFirstCaret!)
+            let myRange = (indexOfStartSentinal! ..< indexOfFirstCaret!)
         
-            let expirationDateRange = Range<String.Index>(start: expirationDateIndex!, end: expirationDateEndIndex!)
+            //let expirationDateRange = (expirationDateIndex! ..< expirationDateEndIndex!)
         
-            let cardNumber = temp.substringWithRange(myRange)
-            var expirationDate = temp.substringWithRange(expirationDateRange)
+            let cardNumber = temp.substring(with: myRange)
+            var expirationDate = "";//temp.substring(with: expirationDateRange)
             // USA Technologies require, for reasons unknown, to be YY/MM, not MM/YY as provided in swipe data
             
-            let expMonth: String = expirationDate.substringFromIndex(expirationDate.startIndex.advancedBy(2))
+            let expMonth: String = expirationDate.substring(from: expirationDate.characters.index(expirationDate.startIndex, offsetBy: 2))
             
-            let expDateRange = Range<String.Index>(
-                start: expirationDate.startIndex.advancedBy(2),
-                end: expirationDate.endIndex
-                                            )
-            expirationDate.removeRange(expDateRange)
+            let expDateRange = (expirationDate.characters.index(expirationDate.startIndex, offsetBy: 2) ..< expirationDate.endIndex)
+            expirationDate.removeSubrange(expDateRange)
 
             let expDateFinal = expirationDate + expMonth
 

@@ -14,9 +14,9 @@ class ShoppingCart {
     var products: [Product] = []
     
     var totalItemsInCart: Int = 0
-    private var totalAmountDue: Double = 0.00
+    fileprivate var totalAmountDue: Double = 0.00
     
-    func addProduct(product: Product)
+    func addProduct(_ product: Product)
     {
         products.append(product)
         totalAmountDue += product.totalCost()
@@ -27,13 +27,13 @@ class ShoppingCart {
         return totalAmountDue
     }
     // Removes a Product based on the barcode
-    func removeProduct(product: Product)
+    func removeProduct(_ product: Product)
     {
         for i in 0..<products.count
         {
             if(products[i].barcode==product.barcode)
             {
-                products.removeAtIndex(i)
+                products.remove(at: i)
                 totalAmountDue -= product.totalCost()
                 break
             }
@@ -47,14 +47,14 @@ class ShoppingCart {
         totalItemsInCart = 0
     }
     
-    func countOfBarcode(barcode: String) -> Int
+    func countOfBarcode(_ barcode: String) -> Int
     {
         var barcodeCount: Int = 0
         for i in 0..<products.count
         {
             if(products[i].barcode == barcode)
             {
-                ++barcodeCount
+                barcodeCount += 1
             }
         }
         return barcodeCount
@@ -69,13 +69,13 @@ class ShoppingCart {
        for i in 0..<products.count
        {
         var ar: Dictionary = Dictionary<String, AnyObject>()
-        ar["count"] = countOfBarcode(products[i].barcode)
-        ar["item"] = products[i].toDictionary()
-        productsDictionary[products[i].barcode] = ar
+        ar["count"] = countOfBarcode(products[i].barcode) as AnyObject
+        ar["item"] = products[i].toDictionary() as AnyObject
+        productsDictionary[products[i].barcode] = ar as AnyObject?
        }
-        rVal["cart_items"] = productsDictionary
-        rVal["total_due"] = totalAmountDue
-        rVal["item_count"] = products.count
+        rVal["cart_items"] = productsDictionary as AnyObject?
+        rVal["total_due"] = totalAmountDue as AnyObject?
+        rVal["item_count"] = products.count as AnyObject?
         return rVal
     }
 }

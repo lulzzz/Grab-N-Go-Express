@@ -7,13 +7,15 @@
 //
 
 import UIKit
+import CoreLocation
 
-class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelegate, RegisterUserControlDelegate {
+class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelegate, RegisterUserControlDelegate, CLLocationManagerDelegate, DollarBillAcceptorDelegate, SelfCheckoutViewDelegate {
 
+    var dollarBillAcceptor: DollarBillAcceptor!;
+    
     // Authentication Details
     var user = User()
 
-    
     var locButton = UIButton()
     
     var bIsRegistering: Bool = false
@@ -42,25 +44,32 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     //var registrationInfo: Registration
     
     enum loginState{
-        case Anonymous
-        case ObtainingPhoneNumber
-        case PhoneNumberObtained
-        case ObtainingPinNumberState
-        case PinNumberObtained
-        case CredentialsVerified
-        case CredentialPhoneNumberError
-        case CredentialPinNumberError
-        case VerifyingCredentials
+        case anonymous
+        case obtainingPhoneNumber
+        case phoneNumberObtained
+        case obtainingPinNumberState
+        case pinNumberObtained
+        case credentialsVerified
+        case credentialPhoneNumberError
+        case credentialPinNumberError
+        case verifyingCredentials
     }
     var loginButtonOriginalX: CGFloat = 0.00
     var signupButtonOriginalX: CGFloat = 0.00
     var logoOriginalFrame: CGRect = CGRect()
     
-    var loginStatus = loginState.Anonymous
+    var loginStatus = loginState.anonymous
     
-    override func viewDidAppear(animated: Bool) {
+    // Location-Aware
+    let locationManager = CLLocationManager()
+    
+    override func viewDidAppear(_ animated: Bool) {
         
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        //Timeout(5.0) { self.login() }
+        //Timeout(10.0) { self.phoneNumberControl.delegate?.phoneNumberCompletion!("3037366808") }
+        //Timeout(15.0) { self.passcodeControl.delegate?.passcodeCompletion!("4410") }
+        
+        if(UIDevice.current.userInterfaceIdiom == .pad)
         {
             //locButton = addButton("location_button.png", action: "locationButton", text: "", font: "Archer-Bold",
             //    fontSize: 28.0, xPos: 0.00, yPos: view.frame.height, xPosW: 0, yPosW: view.frame.height-50, textColor: 0x80392C)
@@ -70,42 +79,58 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
             //keypadControl.frame = CGRect(x: self.frame.width/2-keypadControl.keypadControlWidth/2, y: 200, width: keypadControl.keypadControlWidth, height: keypadControl.keypadControlHeight)
         }
         
-        let defaults = NSUserDefaults.standardUserDefaults()
+        self.locationManager.requestAlwaysAuthorization()
+        
+        // For use in foreground
+        self.locationManager.requestWhenInUseAuthorization()
+        
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.startUpdatingLocation()
+            print("Location Services Enabled")
+        }
+        
+        let defaults = UserDefaults.standard
         
         var appDefaults = Dictionary<String, AnyObject>()
-        appDefaults["location_serial"] = false
-        NSUserDefaults.standardUserDefaults().registerDefaults(appDefaults)
-        NSUserDefaults.standardUserDefaults().synchronize()
+        appDefaults["location_serial"] = false as AnyObject?
+        UserDefaults.standard.register(defaults: appDefaults)
+        UserDefaults.standard.synchronize()
         
         //let a = NSUserDefaults.standardUserDefaults().boolForKey("sound")
         
-        let settingsUpcIdentifier = NSUserDefaults.standardUserDefaults().stringForKey("location_serial");
+        let settingsUpcIdentifier = UserDefaults.standard.string(forKey: "location_serial");
         print(settingsUpcIdentifier);
 
         //defaults.setObject(locationSerial.text, forKey: "location_serial")
         //defaults.setObject(locationUsername.text, forKey: "location_username")
-        if NSUserDefaults.standardUserDefaults().stringForKey("location_serial") == "0"
+        if UserDefaults.standard.string(forKey: "location_serial") == "0"
         {
             let configView = ConfigurationView()
             configView.view.frame = view.frame
-            configView.view.backgroundColor = UIColor.whiteColor()
-            self.presentViewController(configView, animated: true, completion: nil)
+            configView.view.backgroundColor = UIColor.white
+            self.present(configView, animated: true, completion: nil)
             print("Location Serial Not Set")
         }
         else
         {
             //locationButton()
             print("Location Serial Set")
-            print(defaults.objectForKey("location_serial"))
+            print(defaults.object(forKey: "location_serial"))
         }
 
-        
+        if(dollarBillAcceptor.bDBVInitialized == false)
+        {
+            log("Dollar Bill Validator Is Not Initialized")
+            //dollarBillAcceptor.initDBV()
+        }
         //user.phoneNumber = "8587366808"
         //user.passcode = "4410"
         //loginRequest(user)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         
         resetScreen()
     }
@@ -114,14 +139,14 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     {
         let configView = ConfigurationView()
         configView.view.frame = view.frame
-        configView.view.backgroundColor = UIColor.whiteColor()
-        self.presentViewController(configView, animated: true, completion: nil)
+        configView.view.backgroundColor = UIColor.white
+        self.present(configView, animated: true, completion: nil)
     }
     
     // keyboard height adjust
-    func keyboardWillShow(notification: NSNotification) {
+    func keyboardWillShow(_ notification: Notification) {
         
-        let keyboardFrame = (notification.userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+        let keyboardFrame = (notification.userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         cancelButton.frame.origin.y = keyboardFrame.origin.y - cancelButton.frame.height
         cancelButton.frame.origin.x = view.frame.width/2-cancelButton.frame.width/2
         
@@ -129,8 +154,14 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
+        
+        selfCheckoutView = SelfCheckoutView()
+        
+        dollarBillAcceptor = DollarBillAcceptor();
+        dollarBillAcceptor.delegate = self;
+        dollarBillAcceptor.test();
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(LoginView.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         
         // 77, 105, 22
         
@@ -180,16 +211,16 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         
         // Obtaining Phone Number State
         nextButton = addButton("background_button.png", action: "next", text: "NEXT", font: "Archer-Bold", fontSize: 28.0, xPos: -400, yPos: 530.00, xPosW: -400, yPosW: 850, textColor: 0x80392C)
-        nextButton.hidden = true
+        nextButton.isHidden = true
         nextButton.alpha = 0.0
 
         phoneNumberControl.delegate = self
-        phoneNumberControl.hidden = true
-        phoneNumberControl.textInput.keyboardType = .NumberPad
+        phoneNumberControl.isHidden = true
+        phoneNumberControl.textInput.keyboardType = .numberPad
         view.addSubview(phoneNumberControl)
         
         passcodeControl.delegate = self
-        passcodeControl.hidden = true
+        passcodeControl.isHidden = true
         view.addSubview(passcodeControl)
         
     }
@@ -208,33 +239,33 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     {
         switch(loginStatus)
         {
-        case .Anonymous:
-            loginStatus = .ObtainingPhoneNumber
+        case .anonymous:
+            loginStatus = .obtainingPhoneNumber
             addCancelButton();
             cancelButton.frame.origin.x = view.frame.width/2-cancelButton.frame.width/2
             animatedHideAnonymousState()
             break
             
-        case .ObtainingPhoneNumber:
-            loginStatus = .ObtainingPinNumberState
+        case .obtainingPhoneNumber:
+            loginStatus = .obtainingPinNumberState
             
             break
             
-        case .ObtainingPinNumberState:
-            loginStatus = .VerifyingCredentials
+        case .obtainingPinNumberState:
+            loginStatus = .verifyingCredentials
             break
         
-        case .VerifyingCredentials:
-            loginStatus = .CredentialsVerified
+        case .verifyingCredentials:
+            loginStatus = .credentialsVerified
             break;
             
-        case .CredentialsVerified:
+        case .credentialsVerified:
             break
             
-        case .CredentialPhoneNumberError:
+        case .credentialPhoneNumberError:
             break
 
-        case .CredentialPinNumberError:
+        case .credentialPinNumberError:
             break
             
         default:
@@ -244,35 +275,51 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
     func signup()
     {
-        loginStatus = .Anonymous
+        loginStatus = .anonymous
         bIsRegistering = true
         advanceState()
     }
     
     func login()
     {
+
         advanceState()
     }
     
     var selfCheckoutView: SelfCheckoutView!
     
-    override func loginResult(jsonData: JSON)
+    override func loginResult(_ jsonData: JSON)
     {
-
-        let error = jsonData["Error"]
+        if jsonData["admin"] != nil
+        {
+            if jsonData["admin"].bool! == true
+            {
+                // Forward to the admin page
+                //print("admin is true");
+                //var adminView = AdministrationView()
+                //self.present(adminView, animated: true, completion: nil)
+                //return;
+            }
+    }
+        
+    let error = jsonData["Error"]
         if(error == 0)
         {
-            selfCheckoutView = SelfCheckoutView()
+            
+            selfCheckoutView.delegate = self;
             selfCheckoutView.setBaseParameters(user)
         user.userAuthenticated(phoneNumber, passcode: user.passcode)
         user.balance = Double(jsonData["Balance"].double!);
         user.accountOperator = jsonData["Operator"].string!
             
-        selfCheckoutView.view.backgroundColor = UIColor.whiteColor()
+        selfCheckoutView.view.backgroundColor = UIColor.white
         selfCheckoutView.login(user)
         selfCheckoutView.user = user
    
-        self.presentViewController(selfCheckoutView, animated: true, completion: nil)
+        dollarBillAcceptor.delegate = selfCheckoutView;
+        dollarBillAcceptor.enable()
+        
+        self.present(selfCheckoutView, animated: true, completion: nil)
             
         }
         else
@@ -282,11 +329,9 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         }
     }
     
-
-    
-    func resetScreen()
+    override func resetScreen()
     {
-        loginStatus = .Anonymous
+        loginStatus = .anonymous
         user = User()
         phoneNumber = ""
         passcode = ""
@@ -296,13 +341,13 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         passcodeControl.passcode = ""
         cancelButton.removeFromSuperview();
         
-        UIView.animateWithDuration(0.5, delay: 0.4,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.4,
+            options: .curveEaseOut, animations: {
                 self.loginButton.frame.origin.x = self.loginButtonOriginalX
             }, completion: nil)
         
-        UIView.animateWithDuration(0.5, delay: 0.5,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.5,
+            options: .curveEaseOut, animations: {
                 self.signupButton.frame.origin.x = self.signupButtonOriginalX
                 self.logoView.frame = self.logoOriginalFrame
                 self.logoView.alpha = 1.0
@@ -315,16 +360,16 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
                 self.setBackgroundImage("background_green.png")
                 self.backgroundImageView.alpha = 0.0
                 //self.phoneNumberControl.alpha = 0
-                self.phoneNumberControl.hidden = true
+                self.phoneNumberControl.isHidden = true
                 //
 
-                UIView.animateWithDuration(0.5, delay: 0.0,
-                    options: .CurveEaseOut, animations: {
+                UIView.animate(withDuration: 0.5, delay: 0.0,
+                    options: .curveEaseOut, animations: {
                         self.backgroundImageView.alpha = 1.0
                         self.phoneNumberControl.frame = CGRect(x: self.screenSize.width/2-self.phoneNumberControl.frame.width/2, y: self.phoneNumberControl.frame.origin.y, width: self.phoneNumberControl.frame.width, height: self.phoneNumberControl.frame.height)
                         self.passcodeControl.alpha = 0.0
-                        self.passcodeControl.hidden = true
-                        self.instructionLabel.hidden = true
+                        self.passcodeControl.isHidden = true
+                        self.instructionLabel.isHidden = true
                         
                         self.instructionLabel.alpha = 1.0
                     }, completion: nil);
@@ -342,13 +387,13 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         passcodeControl.passcode = ""
         // Anonymous State UI
         //loginButton.alpha = 0
-        UIView.animateWithDuration(0.5, delay: 0.4,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.4,
+            options: .curveEaseOut, animations: {
                 self.loginButton.center.x += self.view.bounds.width
             }, completion: nil)
         
-        UIView.animateWithDuration(0.5, delay: 0.5,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.5,
+            options: .curveEaseOut, animations: {
                 self.signupButton.center.x += self.view.bounds.width
                 self.logoView.frame = CGRect(x: 45, y: 30, width: 210, height: 200)
                 self.transparentApple.alpha = 0
@@ -359,10 +404,10 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
                 self.setBackgroundImage("background_blue.png")
                 self.backgroundImageView.alpha = 0
                 self.phoneNumberControl.alpha = 1.0
-                self.phoneNumberControl.hidden = false
-                self.instructionLabel.hidden = false
-                UIView.animateWithDuration(0.5, delay: 0.0,
-                    options: .CurveEaseOut, animations: {
+                self.phoneNumberControl.isHidden = false
+                self.instructionLabel.isHidden = false
+                UIView.animate(withDuration: 0.5, delay: 0.0,
+                    options: .curveEaseOut, animations: {
                         self.backgroundImageView.alpha = 1.0
                         self.phoneNumberControl.frame = CGRect(x: self.screenSize.width/2-self.phoneNumberControl.frame.width/2, y: self.phoneNumberControl.frame.origin.y, width: self.phoneNumberControl.frame.width, height: self.phoneNumberControl.frame.height)
                         
@@ -378,13 +423,13 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     {
         // Anonymous State UI
         //loginButton.alpha = 0
-        UIView.animateWithDuration(0.5, delay: 0.4,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.4,
+            options: .curveEaseOut, animations: {
                 self.loginButton.center.x += self.view.bounds.width
             }, completion: nil)
         
-        UIView.animateWithDuration(0.5, delay: 0.5,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.5,
+            options: .curveEaseOut, animations: {
                 self.signupButton.center.x += self.view.bounds.width
                 self.logoView.frame = CGRect(x: 45, y: 30, width: 210, height: 200)
                 self.transparentApple.alpha = 0
@@ -395,10 +440,10 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
                 self.setBackgroundImage("background_blue.png")
                 self.backgroundImageView.alpha = 0
                 self.phoneNumberControl.alpha = 1.0
-                self.phoneNumberControl.hidden = false
-                self.instructionLabel.hidden = false
-                UIView.animateWithDuration(0.5, delay: 0.0,
-                    options: .CurveEaseOut, animations: {
+                self.phoneNumberControl.isHidden = false
+                self.instructionLabel.isHidden = false
+                UIView.animate(withDuration: 0.5, delay: 0.0,
+                    options: .curveEaseOut, animations: {
                         self.backgroundImageView.alpha = 1.0
                         self.phoneNumberControl.frame = CGRect(x: self.screenSize.width/2-self.phoneNumberControl.frame.width/2, y: self.phoneNumberControl.frame.origin.y, width: self.phoneNumberControl.frame.width, height: self.phoneNumberControl.frame.height)
                         
@@ -410,7 +455,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         )
     }
     
-     func phoneNumberCompletion(phoneNumber: String)
+     func phoneNumberCompletion(_ phoneNumber: String)
      {
         
         if(phoneNumber == "156-631-2311")
@@ -422,8 +467,8 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         self.phoneNumber = phoneNumber
             // Animate phoneNumberControl offscreen
       
-        UIView.animateWithDuration(0.5, delay: 0.5,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.5,
+            options: .curveEaseOut, animations: {
                 
                 // We've got our phone number, move onto the next piece of info needed
                 // Slide the phoneNumberControl to the right
@@ -432,11 +477,11 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
             }, completion: {_ in
                 
                 // Animation is complete
-                self.passcodeControl.hidden = false;
+                self.passcodeControl.isHidden = false;
                 self.passcodeControl.alpha = 1.0
                 
-                UIView.animateWithDuration(0.5, delay: 0.0,
-                    options: .CurveEaseOut, animations: {
+                UIView.animate(withDuration: 0.5, delay: 0.0,
+                    options: .curveEaseOut, animations: {
                         
                         // Animate the next element that needs to be shown
                         self.passcodeControl.frame = CGRect(x: self.screenSize.width/2-self.phoneNumberControl.frame.width/2, y: self.passcodeControl.frame.origin.y, width: self.passcodeControl.frame.width, height: self.passcodeControl.frame.height)
@@ -449,10 +494,10 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         )
      }
     
-    func passcodeCompletion(passcode: String)
+    func passcodeCompletion(_ passcode: String)
     {
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 
                 self.passcodeControl.center.x += self.view.bounds.width
                 
@@ -503,8 +548,8 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         bIsRegistering = false
         view.addSubview(registerUserView)
         backgroundImageView.alpha = 0.50
-        registerUserView.okButton.setTitle("Let's GO!", forState: .Normal)
-        registerUserView.cancelButton.setTitle("Cancel", forState: .Normal)
+        registerUserView.okButton.setTitle("Let's GO!", for: UIControlState())
+        registerUserView.cancelButton.setTitle("Cancel", for: UIControlState())
         registerUserView.registration.phoneNumber = user.phoneNumber
         registerUserView.registration.passcode = user.passcode
 
@@ -525,7 +570,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         animatedRegistrationProgress.animateIn()
 
         // call registerUser
-        dispatch_async(dispatch_get_main_queue(), {
+        DispatchQueue.main.async(execute: {
             
             self.registerUser(self.registrationInfo)
             
@@ -535,11 +580,11 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         // We need a way of being notified when this is done...
     }
     
-    override func registerUserCompleted(jsonStr: String) {
+    override func registerUserCompleted(_ jsonStr: String) {
     
     }
     
-    override func registrationConfirmed(jsonData: JSON) {
+    override func registrationConfirmed(_ jsonData: JSON) {
         
         print("im here bitch")
         
@@ -548,12 +593,12 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         switch(error)
         {
         case 0:
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.animatedRegistrationProcess.animateOut()
                //let user: User = self.user
                 self.resetScreen()
                 let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "Registration Successfull")
-                errorAlertView.cancelButton.hidden = true
+                errorAlertView.cancelButton.isHidden = true
                 errorAlertView.centerOKButtonAnimated()
                 self.view.addSubview(errorAlertView)
                 //self.loginRequest(user)
@@ -579,7 +624,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
             break
             
         default:
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.processErrors(jsonData)
                 //self.registrationErrorInvalidCCV()
             })
@@ -587,7 +632,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         }
     }
     
-    override func processErrors(jsonData: JSON) {
+    override func processErrors(_ jsonData: JSON) {
 
         if(bIsRegistering==true)
         {
@@ -615,7 +660,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         undoRegisterUser(registerUserView.registration)
     }
     
-    func registrationError(jsonData: NSString) {
+    func registrationError(_ jsonData: NSString) {
         
     }
     
@@ -628,14 +673,14 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         errorAlertView.delegate = self
         view.addSubview(errorAlertView)
         backgroundImageView.alpha = 0.50
-        errorAlertView.okButton.setTitle("Swipe Credit Card", forState: .Normal)
-        errorAlertView.cancelButton.setTitle("Cancel", forState: .Normal)
-        errorAlertView.okButton.removeTarget(nil, action: nil, forControlEvents: .AllEvents)
-        errorAlertView.okButton.addTarget(self, action: "retryCreditCard:", forControlEvents: UIControlEvents.TouchDown)
+        errorAlertView.okButton.setTitle("Swipe Credit Card", for: UIControlState())
+        errorAlertView.cancelButton.setTitle("Cancel", for: UIControlState())
+        errorAlertView.okButton.removeTarget(nil, action: nil, for: .allEvents)
+        errorAlertView.okButton.addTarget(self, action: #selector(LoginView.retryCreditCard(_:)), for: UIControlEvents.touchDown)
         myAlert = errorAlertView
     }
     
-    func retryCreditCard(sender: UIButton)
+    func retryCreditCard(_ sender: UIButton)
     {
         print("Retrying credit card action")
         myAlert.ok()
@@ -654,10 +699,10 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         errorAlertView.delegate = self
         view.addSubview(errorAlertView)
         backgroundImageView.alpha = 0.50
-        errorAlertView.okButton.setTitle("Re-Enter", forState: .Normal)
-        errorAlertView.cancelButton.setTitle("Cancel", forState: .Normal)
-        errorAlertView.okButton.removeTarget(nil, action: nil, forControlEvents: .AllEvents)
-        errorAlertView.okButton.addTarget(self, action: "retryZipcode", forControlEvents: UIControlEvents.TouchDown)
+        errorAlertView.okButton.setTitle("Re-Enter", for: UIControlState())
+        errorAlertView.cancelButton.setTitle("Cancel", for: UIControlState())
+        errorAlertView.okButton.removeTarget(nil, action: nil, for: .allEvents)
+        errorAlertView.okButton.addTarget(self, action: #selector(LoginView.retryZipcode), for: UIControlEvents.touchDown)
         myAlert = errorAlertView
     }
     
@@ -678,10 +723,10 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         errorAlertView.delegate = self
         view.addSubview(errorAlertView)
         backgroundImageView.alpha = 0.50
-        errorAlertView.okButton.setTitle("Re-Enter", forState: .Normal)
-        errorAlertView.cancelButton.setTitle("Cancel", forState: .Normal)
-        errorAlertView.okButton.removeTarget(nil, action: nil, forControlEvents: .AllEvents)
-        errorAlertView.okButton.addTarget(self, action: "retryCCV", forControlEvents: UIControlEvents.TouchDown)
+        errorAlertView.okButton.setTitle("Re-Enter", for: UIControlState())
+        errorAlertView.cancelButton.setTitle("Cancel", for: UIControlState())
+        errorAlertView.okButton.removeTarget(nil, action: nil, for: .allEvents)
+        errorAlertView.okButton.addTarget(self, action: #selector(LoginView.retryCCV), for: UIControlEvents.touchDown)
         myAlert = errorAlertView
     }
     
@@ -702,7 +747,7 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         return;
     }
     
-    override func undoRegisterUserConfirmed(jsonData: JSON)
+    override func undoRegisterUserConfirmed(_ jsonData: JSON)
     {
         
     }
@@ -732,11 +777,11 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
         let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: "Unable to connect to the Internet.  Please call your service provider.  I am unable to continue")
         errorAlertView.delegate = self
         self.view.addSubview(errorAlertView)
-        errorAlertView.okButton.setTitle("Retry", forState: .Normal)
-        errorAlertView.okButton.hidden = true
+        errorAlertView.okButton.setTitle("Retry", for: UIControlState())
+        errorAlertView.okButton.isHidden = true
         errorAlertView.centerCancelButtonAnimated()
-        errorAlertView.okButton.removeTarget(nil, action: nil, forControlEvents: .AllEvents)
-        errorAlertView.okButton.addTarget(self, action: "retryInternetDown", forControlEvents: UIControlEvents.TouchDown)
+        errorAlertView.okButton.removeTarget(nil, action: nil, for: .allEvents)
+        errorAlertView.okButton.addTarget(self, action: #selector(LoginView.retryInternetDown), for: UIControlEvents.touchDown)
         self.myAlert = errorAlertView
         super.timeout()
     }
@@ -747,6 +792,65 @@ class LoginView: UIController, PhoneNumberControlDelegate, PasscodeControlDelega
     
     func cancelErrorAlert(){
         myAlert.ok()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let locValue:CLLocationCoordinate2D = manager.location!.coordinate
+        print("locations = \(locValue.latitude) \(locValue.longitude)")
+        
+        // api.grabngo.market
+        
+        let gpsCoords: GPSCoordinates = GPSCoordinates()
+        gpsCoords.latitude = locValue.latitude
+        gpsCoords.longitude = locValue.longitude
+        
+        updateGPSCoordinates(gpsCoords)
+        
+        locationManager.stopUpdatingLocation()
+        
+        // updates the GPS Coordinates!  Let's see if this 
+        // works.  It's the first "call" to the new API from within
+        // the Grab n Go App itself
+    }
+    
+    func billAccepted(_ value: Double) {
+        user.balance = value;
+        log("Bill Accepted");
+    }
+    
+    func log(_ msg: String) {
+        networkLoadingView.text = msg;
+        displayLoading()
+    }
+    
+    func logs(_ msg: String) {
+        networkLoadingView.text = msg;
+        displayLoading()
+    }
+    
+    
+func cableConnected()
+{
+    log("Cable Connected");
+}
+    
+func cableDisconnected()
+{
+    log("Cable Disconnected\n")
+}
+    
+    
+    func viewDismissed()
+    {
+        log("View Dismissed");
+        dollarBillAcceptor.disable();
+    }
+    
+    func autologin()
+    {
+        //user.phoneNumber = phoneNumber
+        //user.passcode = passcode
+        //loginRequest(user)
     }
 }
 

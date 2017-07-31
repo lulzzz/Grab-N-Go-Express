@@ -19,3 +19,10 @@ class AnimatedControl: UIView {
     */
 
 }
+
+class AnimatedButton : UIButton {
+    var originalXPos: CGFloat = 0;
+    var originalYPos: CGFloat = 0;
+    var originalWidth: CGFloat = 0;
+    var originalHeight: CGFloat = 0;
+}

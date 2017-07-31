@@ -9,7 +9,7 @@
 import UIKit
 
 @objc protocol BarcodeControlDelegate{
-    func listItems(barcode: String)
+    func listItems(_ barcode: String)
 }
 
 class BarcodeControl : SingleInputControl
@@ -39,7 +39,7 @@ class BarcodeControl : SingleInputControl
 
     }
     
-    override func keypadDigitPressed(digitPressed: String) {
+    override func keypadDigitPressed(_ digitPressed: String) {
         textInput.text = textInput.text! + digitPressed
         delegate?.listItems(textInput.text!);
     }

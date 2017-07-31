@@ -26,12 +26,12 @@ class JsonRequestController: NetworkRequestController {
         return ""
     }
 
-    func errorExit(parameter: String) -> Bool
+    func errorExit(_ parameter: String) -> Bool
     {
         return true
     }
     
-    func checkPin(phoneNumber: String, passcode: String) -> Bool
+    func checkPin(_ phoneNumber: String, passcode: String) -> Bool
     {
         // Format the json request and notify as needed
         return true

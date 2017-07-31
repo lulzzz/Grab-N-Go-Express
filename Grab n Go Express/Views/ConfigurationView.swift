@@ -14,7 +14,7 @@ class ConfigurationView: UIController {
     var locationUsername: UITextField = UITextField()
     var locationPassword: UITextField = UITextField()
     
-    var timer: NSTimer!
+    var timer: Timer!
     
     var noAccountLabel: UILabel!
     var i = 0
@@ -23,29 +23,29 @@ class ConfigurationView: UIController {
     var saveSettingsButton: UIButton = UIButton()
     
     var shoppingList: [String] = [  "Welcome to the Market",
-                                    "We need to know which market you are at",
-                                    "We do this by scanning a special barcode",
-                                    "Find a poster with instructions",
-                                    "It says \"Scan Your Location Here\"",
-                                    "Scan the location barcode"]
+                                    "Please wait while we determine your location",
+                                    "Grab, Scan and Pay with this App",
+                                    "Grab n Go Market makes it easy",
+                                    "Almost Done",
+                                    "Location Found"]
     
     var manualEntry = UIButton()
     
-    override func viewDidAppear(animated: Bool)
+    override func viewDidAppear(_ animated: Bool)
     {
 
-        timer = NSTimer()
-        timer = NSTimer.scheduledTimerWithTimeInterval(18, target:self, selector: Selector("animateInstructions"), userInfo: nil, repeats: true)
+        timer = Timer()
+        timer = Timer.scheduledTimer(timeInterval: 18, target:self, selector: #selector(ConfigurationView.animateInstructions), userInfo: nil, repeats: true)
         
         //UIView.animateWithDuration(0.5, delay: 15,
         //    options: .CurveEaseOut, animations:
         //    {
                 //
         
-        manualEntry.backgroundColor = UIColor.whiteColor()
+        manualEntry.backgroundColor = UIColor.white
         
-        UIView.animateWithDuration(2.5, delay: 7,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 2.5, delay: 7,
+            options: .curveEaseOut, animations: {
                 self.logoView.frame.origin.y = self.view.frame.height-self.logoView.frame.height-12
                 self.picker.view.frame = CGRect(x: 25, y: 25, width: self.view.frame.width-50, height: 185)
                 
@@ -53,8 +53,9 @@ class ConfigurationView: UIController {
                 self.picker.view.alpha = 0.0
             }, completion: {_ in
               
-                UIView.animateWithDuration(0.5, delay: 0,
-                    options: .CurveEaseOut, animations: {
+                UIView.animate(withDuration: 0.5, delay: 0,
+                    options: .curveEaseOut, animations: {
+                        /*
                         self.picker.view.hidden = false
                         self.picker.view.alpha = 1.0
                         self.noAccountLabel.frame.origin.y = self.picker.view.frame.origin.y
@@ -74,6 +75,7 @@ class ConfigurationView: UIController {
                         self.noAccountLabel.frame.size.height = 120
                         self.noAccountLabel.backgroundColor = UIColor.whiteColor()
                         self.view.addSubview(self.manualEntry)
+                        */
                     }, completion: nil)
                 
             })
@@ -88,13 +90,13 @@ class ConfigurationView: UIController {
     {
         timer.invalidate()
         view.addSubview(locationSerial)
-        locationSerial.keyboardType = .NumberPad
+        locationSerial.keyboardType = .numberPad
         locationSerial.frame = CGRect(x: 100, y: 100, width: view.frame.width-200, height: 40)
         myRect = CGRect(x: 100, y: 100, width: view.frame.width-200, height: 40)
-        saveSettingsButton.hidden = true
+        saveSettingsButton.isHidden = true
         view.addSubview(saveSettingsButton)
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations:
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations:
             {
                 self.noAccountLabel.alpha = 0.0
                 self.picker.view.alpha = 0.0
@@ -105,11 +107,11 @@ class ConfigurationView: UIController {
             }, completion:
             {(Bool) in
                 
-                UIView.animateWithDuration(0.5, delay: 0,
-                    options: .CurveEaseOut, animations: {
-                        self.manualEntry.hidden = true
+                UIView.animate(withDuration: 0.5, delay: 0,
+                    options: .curveEaseOut, animations: {
+                        self.manualEntry.isHidden = true
                         self.saveSettingsButton.frame = self.manualEntry.frame
-                        self.saveSettingsButton.hidden = false
+                        self.saveSettingsButton.isHidden = false
                         self.saveSettingsButton.alpha = 1.0
                         self.locationSerial.becomeFirstResponder()
                         //self.noAccountLabel.text = self.shoppingList[self.i]
@@ -120,21 +122,21 @@ class ConfigurationView: UIController {
 
     func animateInstructions()
     {
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations:
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations:
             {
                 self.noAccountLabel.alpha = 0.0
                 
             }, completion:
             {(Bool) in
                 
-                UIView.animateWithDuration(0.5, delay: 1,
-                    options: .CurveEaseOut, animations: {
+                UIView.animate(withDuration: 0.5, delay: 1,
+                    options: .curveEaseOut, animations: {
                         self.noAccountLabel.text = self.shoppingList[self.i]
                         self.noAccountLabel.alpha = 1.0
                     }, completion: nil)
         })
-        ++i
+        i += 1
         
         if(i>4)
         {
@@ -191,28 +193,28 @@ options: .CurveEaseOut, animations: {
         //    }, completion: nil)
         
         locationSerial = UITextField(frame: CGRect(x: 50, y:50, width: view.frame.width-200, height: 50))
-        locationSerial.borderStyle = .RoundedRect
-        locationSerial.backgroundColor = UIColor.whiteColor()
+        locationSerial.borderStyle = .roundedRect
+        locationSerial.backgroundColor = UIColor.white
         locationSerial.placeholder = "Location Serial"
         
         locationUsername = UITextField(frame: CGRect(x: 50, y: 125, width: view.frame.width-200, height: 50))
-        locationUsername.borderStyle = .RoundedRect
-        locationUsername.backgroundColor = UIColor.whiteColor()
+        locationUsername.borderStyle = .roundedRect
+        locationUsername.backgroundColor = UIColor.white
         locationUsername.placeholder = "Location Username"
                 
         let button: UIButton = UIButton(frame: CGRect(x: 50, y: 185, width: view.frame.width-200, height: 50))
         
-        button.backgroundColor = UIColor.clearColor()
+        button.backgroundColor = UIColor.clear
         
-        button.titleLabel?.textAlignment = .Center
+        button.titleLabel?.textAlignment = .center
         
-        button.setTitle("Save", forState: .Normal)
-        button.setTitleColor(UIColor.blackColor(), forState: .Normal)
+        button.setTitle("Save", for: UIControlState())
+        button.setTitleColor(UIColor.black, for: UIControlState())
         button.titleLabel!.font =  UIFont(name: "Arial", size: 30.0)
         button.layer.borderWidth = 1.9
-        button.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        button.backgroundColor = UIColor.whiteColor()
-        button.addTarget(self, action: "save", forControlEvents: UIControlEvents.TouchUpInside)
+        button.setTitleColor(UIColor.black, for: UIControlState())
+        button.backgroundColor = UIColor.white
+        button.addTarget(self, action: #selector(ConfigurationView.save), for: UIControlEvents.touchUpInside)
         
         saveSettingsButton = button
         //view.addSubview(button)
@@ -232,8 +234,8 @@ options: .CurveEaseOut, animations: {
         addChildViewController(picker)
         picker.view.frame = CGRect(x: 0, y: 0, width: view.frame.width-200, height: 100)
         view.addSubview((picker.view))
-        picker.view.hidden = true
-        picker.didMoveToParentViewController(self)
+        picker.view.isHidden = true
+        picker.didMove(toParentViewController: self)
         //picker?.startScanning()
     }
 
@@ -244,10 +246,10 @@ options: .CurveEaseOut, animations: {
         
         //defaults.setObject(locationSerial.text, forKey: "location_serial")
         
-        NSUserDefaults.standardUserDefaults().setValue(locationSerial.text, forKey: "location_serial")
+        UserDefaults.standard.setValue(locationSerial.text, forKey: "location_serial")
         
         //view.removeFromSuperview()
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     override func didReceiveMemoryWarning() {
@@ -255,14 +257,14 @@ options: .CurveEaseOut, animations: {
         // Dispose of any resources that can be recreated.
     }
     
-    override func barcodePicker(picker: SBSBarcodePicker!, didScan session: SBSScanSession!) {
+    override func barcodePicker(_ picker: SBSBarcodePicker!, didScan session: SBSScanSession!) {
         //let defaults = NSUserDefaults.standardUserDefaults()
         
         
         //defaults.setObject(locationSerial.text, forKey: "location_serial")
-        NSUserDefaults.standardUserDefaults().setValue(locationSerial.text, forKey: "location_serial")
+        UserDefaults.standard.setValue(locationSerial.text, forKey: "location_serial")
 
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     /*
     // MARK: - Navigation

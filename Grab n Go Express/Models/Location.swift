@@ -17,3 +17,8 @@ class Location {
     var location_taxRate: Double = 0.00
     
 }
+
+class GPSCoordinates {
+    var latitude: Double = 0
+    var longitude: Double = 0
+}

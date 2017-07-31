@@ -20,16 +20,16 @@ class Transaction{
     var location: Location = Location()
     
     // Create a datetime to record when the transaction happened
-    var date_time: NSDate = NSDate()
+    var date_time: Date = Date()
     
     var bSuccessfullTransaction: Bool = false
     // Both successfull and unsuccessful transactions are recorded
     
-    func  toDictionary() -> Dictionary<String, AnyObject>
+    func toDictionary() -> Dictionary<String, AnyObject>
     {
         var rVal: Dictionary = Dictionary<String, AnyObject>()
-        rVal["shopping_cart"] = shoppingCart.toDictionary()
-        rVal["user"] = user.toDictionary()
+        rVal["shopping_cart"] = shoppingCart.toDictionary() as AnyObject?
+        rVal["user"] = user.toDictionary() as AnyObject?
         
         // Shopping Cart
         //rVal["cart_items"] = shoppingCart.products.toDictionary()

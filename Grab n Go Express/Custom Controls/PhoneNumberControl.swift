@@ -9,7 +9,7 @@
 import UIKit
 
 @objc protocol PhoneNumberControlDelegate{
-    optional func phoneNumberCompletion(phoneNumber: String)
+    @objc optional func phoneNumberCompletion(_ phoneNumber: String)
 }
 
 class PhoneNumberControl : SingleInputControl
@@ -24,6 +24,7 @@ class PhoneNumberControl : SingleInputControl
         super.init(frame : frame)
 
     }
+        
     
     convenience init (instructionsText: String) {
         
@@ -41,10 +42,11 @@ class PhoneNumberControl : SingleInputControl
         fatalError("This class does not support NSCoding")
     }
     
-    override func keypadDigitPressed(var digitPressed: String) {
+    override func keypadDigitPressed(_ digitPressed: String) {
+        var digitPressed = digitPressed
         // A keypad digit was pressed, update the text field!
         //var str = string
-        let  char = digitPressed.cStringUsingEncoding(NSUTF8StringEncoding)!
+        let  char = digitPressed.cString(using: String.Encoding.utf8)!
         let isBackSpace = strcmp(char, "\\b")
         
         if (isBackSpace == -92) {
@@ -67,7 +69,7 @@ class PhoneNumberControl : SingleInputControl
         phoneNumber = ""
     }
     
-    func formatAsPhone(formatString: String) -> String
+    func formatAsPhone(_ formatString: String) -> String
     {
         let stringLength = formatString.characters.count
         if(stringLength == 1)

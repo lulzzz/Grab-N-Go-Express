@@ -9,7 +9,7 @@
 import UIKit
 
 @objc protocol PasscodeControlDelegate{
-    optional func passcodeCompletion(passcode: String)
+    @objc optional func passcodeCompletion(_ passcode: String)
 }
 
 class PasscodeControl : SingleInputControl
@@ -22,6 +22,8 @@ class PasscodeControl : SingleInputControl
     
     override init (frame : CGRect) {
         super.init(frame : frame)
+        
+        //Timeout(3.0) { self.delegate?.passcodeCompletion!("3037366808"); }
     }
     
     convenience init (instructionsText: String) {
@@ -38,10 +40,10 @@ class PasscodeControl : SingleInputControl
         fatalError("This class does not support NSCoding")
     }
     
-    override func keypadDigitPressed(digitPressed: String) {
+    override func keypadDigitPressed(_ digitPressed: String) {
         // A keypad digit was pressed, update the text field!
         
-        let  char = digitPressed.cStringUsingEncoding(NSUTF8StringEncoding)!
+        let  char = digitPressed.cString(using: String.Encoding.utf8)!
         let isBackSpace = strcmp(char, "\\b")
         
         if (isBackSpace == -92) {
@@ -63,7 +65,7 @@ class PasscodeControl : SingleInputControl
         passcode = ""
     }
     
-    func formatAsPasscode(formatString: String) -> String
+    func formatAsPasscode(_ formatString: String) -> String
     {
         return formatString + " ";
     }

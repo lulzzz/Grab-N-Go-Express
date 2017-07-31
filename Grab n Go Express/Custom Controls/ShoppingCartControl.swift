@@ -10,9 +10,9 @@ import UIKit
 
 
 protocol ShoppingCartControlDelegate{
-    func itemAdded(product: Product)
-    func itemRemoved(product: Product)
-    func updateCartTotal(shoppingCart: ShoppingCart)
+    func itemAdded(_ product: Product)
+    func itemRemoved(_ product: Product)
+    func updateCartTotal(_ shoppingCart: ShoppingCart)
     func cartCleared()
 }
 
@@ -36,45 +36,45 @@ class ShoppingCartControl: UITableView, UITableViewDelegate, UITableViewDataSour
        super.init(frame: frame, style: style)
         
         
-        backgroundColor = UIColor.clearColor()
-        separatorStyle = UITableViewCellSeparatorStyle.None
+        backgroundColor = UIColor.clear
+        separatorStyle = UITableViewCellSeparatorStyle.none
         
         delegate      =   self
         dataSource    =   self
         
-        registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        register(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func numberOfRowsInSection(section: Int) -> Int {
+    override func numberOfRows(inSection section: Int) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return items.count
     }
     
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 15
         
     }
     
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let clearView = UIView()
-        clearView.backgroundColor = UIColor.clearColor()
+        clearView.backgroundColor = UIColor.clear
         return clearView
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
-        let cell: UITableViewCell = dequeueReusableCellWithIdentifier("cell")!
+        let cell: UITableViewCell = dequeueReusableCell(withIdentifier: "cell")!
         
         let bkColor = UIColor(red: 196/255, green: 209/255, blue: 148/255, alpha: 1.0)
         cell.textLabel?.text = self.items[indexPath.section] 
@@ -84,20 +84,20 @@ class ShoppingCartControl: UITableView, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("You selected cell #\(indexPath.row)!")
     }
 
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if (editingStyle == UITableViewCellEditingStyle.Delete) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == UITableViewCellEditingStyle.delete) {
             
             shoppingCartDelegate?.itemRemoved(products[indexPath.section])
-            items.removeAtIndex(indexPath.section)
-            products.removeAtIndex(indexPath.section)
+            items.remove(at: indexPath.section)
+            products.remove(at: indexPath.section)
             updateCartTotal()
             
             reloadData()
@@ -105,11 +105,11 @@ class ShoppingCartControl: UITableView, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    func addProduct(product: Product)
+    func addProduct(_ product: Product)
     {
-        let formatter = NSNumberFormatter()
-        formatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
-        let priceString = formatter.stringFromNumber(product.price)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = NumberFormatter.Style.currency
+        let priceString = formatter.string(from: NSNumber(value: product.price))
         let insertString: String = product.description + "\t\t\t" + priceString!
         items.append(insertString)
         

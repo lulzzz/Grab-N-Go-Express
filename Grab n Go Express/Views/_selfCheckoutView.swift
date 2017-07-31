@@ -12,7 +12,7 @@ import UIKit
 
 class _selfCheckoutView: SelfCheckoutView {
 
-    let scrollView = UIScrollView(frame: UIScreen.mainScreen().bounds)
+    let scrollView = UIScrollView(frame: UIScreen.main.bounds)
     
     
     override func viewDidLoad() {
@@ -30,9 +30,9 @@ class _selfCheckoutView: SelfCheckoutView {
         // Do any additional setup after loading the view.
     }
     
-    override func setBackgroundImage(imageName: String)
+    override func setBackgroundImage(_ imageName: String)
     {
-        var screenSize: CGRect = UIScreen.mainScreen().bounds
+        var screenSize: CGRect = UIScreen.main.bounds
         screenSize.size.width = screenSize.width*2
         screenSize.size.height = screenSize.height*2
         
@@ -41,7 +41,7 @@ class _selfCheckoutView: SelfCheckoutView {
         imageView.frame = screenSize
         self.backgroundImageView = imageView
         self.view.addSubview(imageView)
-        self.view.sendSubviewToBack(imageView)
+        self.view.sendSubview(toBack: imageView)
     }
 
     override func didReceiveMemoryWarning() {
@@ -54,7 +54,7 @@ class _selfCheckoutView: SelfCheckoutView {
         errorAlertView.removeFromSuperview()
         let view = _paymentOptionsView(cartTotal: shoppingCart.totalCartValue())
         view.delegate = self
-        self.presentViewController(view, animated: true, completion: nil)
+        self.present(view, animated: true, completion: nil)
     }
     
     override func scanbycamera()
@@ -62,14 +62,14 @@ class _selfCheckoutView: SelfCheckoutView {
         
         //let distance: CGFloat = 300
         
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 
                 let logoYPos: CGFloat = 20
                 let logoHeight: CGFloat = 20
                 let logoWidth: CGFloat = 20
                 
-                self.logo.hidden = true
+                self.logo.isHidden = true
                 
                 self.logo.frame.origin.x = 25
                 self.logo.frame.origin.y = 25
@@ -115,14 +115,14 @@ class _selfCheckoutView: SelfCheckoutView {
                 
                 self.scanItemInstructionsLabel.frame.origin.x = 0
 
-                self.scanItemInstructionsLabel.hidden = true
+                self.scanItemInstructionsLabel.isHidden = true
 
                 
                 self.scanItemInstructionsLabel.frame.size.width = self.view.frame.width
                 self.scanItemInstructionsLabel.frame.size.height = 150
                 self.scanItemInstructionsLabel.frame.origin.x = 0
                 self.scanItemInstructionsLabel.text = "Hold Items in front of camera to scan"
-                self.scanItemInstructionsLabel.textAlignment = .Center
+                self.scanItemInstructionsLabel.textAlignment = .center
                 self.scanItemInstructionsLabel.font = UIFont(name: "CardenioModern-Bold", size: 50)
                 
                 self.shoppingCartControl.frame.origin.x = 0
@@ -153,13 +153,13 @@ class _selfCheckoutView: SelfCheckoutView {
                 
             }, completion: {_ in
                 
-                UIView.animateWithDuration(1.5, delay: 0.0,
-                    options: .CurveEaseOut, animations: {
+                UIView.animate(withDuration: 1.5, delay: 0.0,
+                    options: .curveEaseOut, animations: {
                         
                         self.picker.view.frame = CGRect(
                             x: self.view.center.x-CGFloat(275/2),
                             y: self.cancelOrderButton.frame.maxY+15, width: 275, height: 275)
-                        self.picker.view.hidden = false
+                        self.picker.view.isHidden = false
                         self.picker.view.alpha = 1.0
                         self.shoppingCartControl.frame.origin.y = self.picker.view.frame.maxY + 15
                         
@@ -183,21 +183,21 @@ class _selfCheckoutView: SelfCheckoutView {
     {
         super.thankYouAnimation()
         
-        UIView.animateWithDuration(0.5, delay: 0.4,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.4,
+            options: .curveEaseOut, animations: {
                 
                 self.doneButton.frame = CGRect(x: self.doneButton.frame.origin.x, y: self.view.frame.height - self.doneButton.frame.height-25, width: self.doneButton.frame.width, height: self.doneButton.frame.height)
 
             }, completion: nil)
     }
     
-    override func login(user: User) {
+    override func login(_ user: User) {
         super.login(user)
         setBaseParameters(user)
     }
     
     /* This is a delegate called by the shopping cart control after an item is successfully added to the cart */
-    override func itemAdded(product: Product)
+    override func itemAdded(_ product: Product)
     {
         
         
@@ -230,10 +230,10 @@ class _selfCheckoutView: SelfCheckoutView {
             user.userAuthenticated(phoneNumber, passcode: user.passcode)
             user.balance = user.balance
             user.accountOperator = user.accountOperator
-            inventoryView.view.backgroundColor = UIColor.whiteColor()
+            inventoryView.view.backgroundColor = UIColor.white
             inventoryView.login(user)
             inventoryView.user = user
-            self.presentViewController(inventoryView, animated: true, completion: nil)
+            self.present(inventoryView, animated: true, completion: nil)
         }
         
         // For the iPhone version, I want to "push" the buttons down.

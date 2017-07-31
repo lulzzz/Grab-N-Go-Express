@@ -10,35 +10,7 @@
 
 UIElementController
 
-This class is intended to simplify the programmatic creation of UIElements.
-
-I created this class for several reasons: 
-
-1.  I don't like using Storyboard to create my UI's.  I'd rather create the UI
-in code.  This is a personal preference.  I really dislike using Storyboard for
-creating my UI's.
-
-2.  There are many things I like about Swift, but there are many things I dislike.
-Creating common UI element's is too many lines of code
-
-FUNCTIONS
-
-createBackground
-createButton
-createImage
-createText
-createTable
-
-PARAMETERS
-
-xPos
-yPos
-width
-height
-vCenter
-hCenter
-
-
+Handles internationalization
 
 *//////////////////////////////////////////////////////
 
@@ -46,10 +18,17 @@ import UIKit
 
 class UIElementController: UIViewController {
 
+    var supportedLanguages = ["English", "Spanish", "French", "Vietnamese"];
+    var defaultLanguage = "English";
+    var currentLanguage = "";
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        currentLanguage = defaultLanguage;
+        
+
     }
 
     override func didReceiveMemoryWarning() {

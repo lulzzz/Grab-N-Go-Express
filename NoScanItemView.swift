@@ -9,7 +9,7 @@
 import UIKit
 
 protocol NoScanItemDelegate{
-    func itemTypedIn(barcode: String)
+    func itemTypedIn(_ barcode: String)
 }
 
 class NoScanItemView: UIController, KeypadControlDelegate, BarcodeControlDelegate, ApiResultsDelegate, UITableViewDelegate, UITableViewDataSource {
@@ -30,8 +30,8 @@ class NoScanItemView: UIController, KeypadControlDelegate, BarcodeControlDelegat
         setBackgroundImage("background_brown.png")
         
         barcodeControl.delegate = self
-        barcodeControl.hidden = false
-        barcodeControl.textInput.keyboardType = .NumberPad
+        barcodeControl.isHidden = false
+        barcodeControl.textInput.keyboardType = .numberPad
         barcodeControl.alpha = 1.0
         barcodeControl.frame = CGRect(x: self.screenSize.width/2-barcodeControl.frame.width/2, y: barcodeControl.frame.origin.y, width: barcodeControl.frame.width, height: barcodeControl.frame.height)
         
@@ -43,8 +43,8 @@ class NoScanItemView: UIController, KeypadControlDelegate, BarcodeControlDelegat
 
         tableView.frame = CGRect(x: 25, y: 25, width: view.frame.width-50, height: 100)
         tableView.delegate = self
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        tableView.separatorStyle = UITableViewCellSeparatorStyle.None
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         tableView.dataSource = self
         view.addSubview(tableView)
         // Add Keypad
@@ -60,16 +60,16 @@ class NoScanItemView: UIController, KeypadControlDelegate, BarcodeControlDelegat
     }
     
     override func cancel() {
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     /*  This actually adds the product into the shoppingCartControl */
-    func barcodeScanned(product: Product)
+    func barcodeScanned(_ product: Product)
     {
         //shoppingCartControl.addProduct(product)
     }
     
-    func itemLookup(itemList: ItemLookup)
+    func itemLookup(_ itemList: ItemLookup)
     {
         items.removeAll()
         self.itemList.removeAll()
@@ -82,31 +82,31 @@ class NoScanItemView: UIController, KeypadControlDelegate, BarcodeControlDelegat
     }
     
     
-    func keypadDigitPressed(digitPressed: String)
+    func keypadDigitPressed(_ digitPressed: String)
     {
         print(digitPressed)
     }
     
-    func listItems(barcode: String)
+    func listItems(_ barcode: String)
     {
         itemLookup(barcode);
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         return self.items.count;
         
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell:UITableViewCell = tableView.dequeueReusableCellWithIdentifier("cell")! as UITableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell:UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "cell")! as UITableViewCell
 
         cell.textLabel?.text = self.items[indexPath.row]
         
         return cell
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let row = indexPath.row
         delegate?.itemTypedIn(itemList[items[row]]!)
         cancel()

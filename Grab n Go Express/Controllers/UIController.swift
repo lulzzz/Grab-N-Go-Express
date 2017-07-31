@@ -14,10 +14,11 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
     // between iPads and iPhones
     
     let kScanditBarcodeScannerAppKey = "C/EsedTPMacbZvmTSgUAIkyMQ/BTXEmgEKPYyj4PfHs";
+    // This should be dynamic!  
     
     var picker : SBSBarcodePicker = SBSBarcodePicker()
 
-    let cancelButton   = UIButton(type: UIButtonType.System) as UIButton
+    let cancelButton   = UIButton(type: UIButtonType.system) as UIButton
     let btnWidth: CGFloat = 210
     let btnHeight: CGFloat = 52
     let btnSpacing: CGFloat = 5
@@ -28,29 +29,37 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
     // be created in code.  This is not the best way of doing this -- it won't play
     // nice with future devices.  More research...
     
+    var centerX: CGFloat = 0;
+    var bottomY: CGFloat = 0;
+    var rightX: CGFloat = 0;
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         SBSLicense.setAppKey(kScanditBarcodeScannerAppKey);
-        picker = SBSBarcodePicker(settings:SBSScanSettings.pre47DefaultSettings())
+        picker = SBSBarcodePicker(settings:SBSScanSettings.pre47Default())
         picker.scanDelegate = self;
-        picker.view.hidden = true
+        picker.view.isHidden = true
         picker.view.alpha = 0.0
         view.addSubview(picker.view)
         
-        
+        centerX = view.bounds.width / 2
+        bottomY = view.bounds.height
+        rightX = view.bounds.width
     }
     
     func addCancelButton()
     {
-        cancelButton.frame = CGRectMake(view.frame.width/2-btnWidth/2+btnWidth/2+btnSpacing/2, view.frame.height-btnHeight-btnSpacing-25, btnWidth, 50)
+        cancelButton.frame = CGRect(x: view.frame.width/2-btnWidth/2+btnWidth/2+btnSpacing/2, y: view.frame.height-btnHeight-btnSpacing-25, width: btnWidth, height: 50)
         //cancelButton.frame = CGRectMake(0, 0, btnWidth, 50)
         cancelButton.backgroundColor = UIColor(red: 237/255, green: 28/255, blue: 36/255, alpha: 1.0)
-        cancelButton.setTitle("CANCEL", forState: UIControlState.Normal)
+        cancelButton.setTitle("CANCEL", for: UIControlState())
         cancelButton.titleLabel?.font = UIFont(name: "Archer-Bold", size: 36.0)
-        cancelButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        cancelButton.addTarget(self, action: "cancel", forControlEvents: UIControlEvents.TouchUpInside)
+        cancelButton.setTitleColor(UIColor.white, for: UIControlState())
+        cancelButton.addTarget(self, action: #selector(UIController.cancel), for: UIControlEvents.touchUpInside)
         view.addSubview(cancelButton)
+        cancelButton.frame.origin.x = view.frame.width/2-cancelButton.frame.width/2
     }
     
     func cancel()
@@ -58,11 +67,11 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         view.removeFromSuperview()
     }
     
-    func barcodePicker(picker: SBSBarcodePicker!, didScan session: SBSScanSession!) {
+    func barcodePicker(_ picker: SBSBarcodePicker!, didScan session: SBSScanSession!) {
     
     }
     
-    let screenSize: CGRect = UIScreen.mainScreen().bounds
+    let screenSize: CGRect = UIScreen.main.bounds
     
     enum deviceType {
             case iPad
@@ -83,7 +92,7 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         
         // For development only.
        // return deviceType.iPhone4
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        if(UIDevice.current.userInterfaceIdiom == .pad)
         {
             return deviceType.iPad
         }
@@ -133,7 +142,7 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
     var backgroundColor: UIColor = UIColor()
     var backgroundImageView: UIImageView = UIImageView()
     
-    func UIColorFromRGB(rgbValue: UInt) -> UIColor {
+    func UIColorFromRGB(_ rgbValue: UInt) -> UIColor {
         return UIColor(
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
@@ -142,7 +151,7 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         )
     }
     
-    func setBackgroundColor(red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat)
+    func setBackgroundColor(_ red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat)
     {
         
         let backgroundColor = UIColor(
@@ -155,31 +164,31 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         self.view.backgroundColor = backgroundColor
     }
     
-    func switchBackgroundColorAnimated(red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat)
+    func switchBackgroundColorAnimated(_ red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat)
     {
         // In case we want to switch the background color in a fun, animated way
     }
     
-    func setBackgroundImage(imageName: String)
+    func setBackgroundImage(_ imageName: String)
     {
-        let screenSize: CGRect = UIScreen.mainScreen().bounds
+        let screenSize: CGRect = UIScreen.main.bounds
         let backgroundImage = UIImage(named: imageName)
         let imageView = UIImageView(image: backgroundImage)
         imageView.frame = screenSize
         self.backgroundImageView = imageView
         self.view.addSubview(imageView)
-        self.view.sendSubviewToBack(imageView)
+        self.view.sendSubview(toBack: imageView)
     }
     
-    func rotateView(degrees: CGFloat, theView: UIView)
+    func rotateView(_ degrees: CGFloat, theView: UIView)
     {
         
         //theView.transform = CGAffineTransformMakeRotation(degrees*M_PI/180);
-        theView.transform = CGAffineTransformMakeRotation(degrees)
+        theView.transform = CGAffineTransform(rotationAngle: degrees)
         //theView.transform = transform
     }
     
-    func switchBackgroundImageAnimated(imageName: String)
+    func switchBackgroundImageAnimated(_ imageName: String)
     {
        // In case we want to switch the background image in a fun, animated way
     }
@@ -196,46 +205,47 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         case bottomRight
     }
     
-    func addButton(action: Selector) -> UIButton
+    func addButton(_ action: Selector) -> UIButton
     {
-        let button   = UIButton(type: UIButtonType.System) as UIButton
-        button.frame = CGRectMake(0, 0, 50, 50)
-        button.backgroundColor = UIColor.greenColor()
-        button.setTitle("Button", forState: UIControlState.Normal)
-        button.addTarget(self, action: action, forControlEvents: UIControlEvents.TouchUpInside)
+        let button   = UIButton(type: UIButtonType.system) as UIButton
+        button.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        button.backgroundColor = UIColor.green
+        button.setTitle("Button", for: UIControlState())
+        button.addTarget(self, action: action, for: UIControlEvents.touchUpInside)
         self.view.addSubview(button)
         
         return button
     }
     
-    func addButton(action: Selector, xPos: CGFloat, yPos: CGFloat)
+    func addButton(_ action: Selector, xPos: CGFloat, yPos: CGFloat)
     {
     
     }
     
-    func addButton(action: Selector, backgroundImage: String)
+    func addButton(_ action: Selector, backgroundImage: String)
     {
         
     }
     
     
-    func addButton(backgroundImage: String, action: Selector, text: String, font: String, fontSize: CGFloat,
-        var x: CGFloat,
-        var y: CGFloat,
+    func addButton(_ backgroundImage: String, action: Selector, text: String, font: String, fontSize: CGFloat,
+        x: CGFloat,
+        y: CGFloat,
         width: CGFloat,
         height: CGFloat, textColor: UInt) -> UIButton
     {
+        var x = x, y = y
         
         // If xPos, yPos, etc is ZERO, then we calculate the center for the screen.
-        let screenSize: CGRect = UIScreen.mainScreen().bounds
+        let screenSize: CGRect = UIScreen.main.bounds
         
         
-        let imageView = UIImageView(frame: CGRectMake(0, 0, width, height)); // set as you want
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: width, height: height)); // set as you want
         let image = UIImage(named: backgroundImage);
         imageView.image = image;
        
         let button: UIButton = addButton(action)
-        button.setBackgroundImage(imageView.image, forState: .Normal)
+        button.setBackgroundImage(imageView.image, for: UIControlState())
         
         if(x == 0)
         {
@@ -258,22 +268,23 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
             button.frame = CGRect(x: x, y: y, width: width, height: height)
         }
         
-        button.backgroundColor = UIColor.clearColor()
+        button.backgroundColor = UIColor.clear
         
-        button.titleLabel?.textAlignment = .Center
-        button.setTitle(text, forState: .Normal)
-        button.backgroundColor = UIColor.clearColor()
+        button.titleLabel?.textAlignment = .center
+        button.setTitle(text, for: UIControlState())
+        button.backgroundColor = UIColor.clear
         button.titleLabel!.font =  UIFont(name: font, size: fontSize)
-        button.setTitleColor(UIColorFromRGB(textColor), forState: .Normal)
+        button.setTitleColor(UIColorFromRGB(textColor), for: UIControlState())
         button.titleLabel!.textColor = UIColorFromRGB(textColor)
         return button
     }
     
-    func addButton(backgroundImage: String, action: Selector, text: String, font: String, fontSize: CGFloat, var xPos: CGFloat, var yPos: CGFloat, var xPosW: CGFloat, var yPosW: CGFloat, textColor: UInt) -> UIButton
+    func addButton(_ backgroundImage: String, action: Selector, text: String, font: String, fontSize: CGFloat, xPos: CGFloat, yPos: CGFloat, xPosW: CGFloat, yPosW: CGFloat, textColor: UInt) -> UIButton
     {
+        var xPos = xPos, yPos = yPos, xPosW = xPosW, yPosW = yPosW
         
         // If xPos, yPos, etc is ZERO, then we calculate the center for the screen.
-        let screenSize: CGRect = UIScreen.mainScreen().bounds
+        let screenSize: CGRect = UIScreen.main.bounds
         
         let image = UIImage(named: backgroundImage)
         let imageView = UIImageView(image: image)
@@ -302,19 +313,20 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
             button.frame = CGRect(x: xPosW, y: yPosW, width: imageView.frame.width, height: imageView.frame.height)
         }
         
-        button.backgroundColor = UIColor.clearColor()
+        button.backgroundColor = UIColor.clear
         
-        button.titleLabel?.textAlignment = .Center
-        button.setTitle(text, forState: .Normal)
-        button.backgroundColor = UIColor.clearColor()
+        button.titleLabel?.textAlignment = .center
+        button.setTitle(text, for: UIControlState())
+        button.backgroundColor = UIColor.clear
         button.titleLabel!.font =  UIFont(name: font, size: fontSize)
-        button.setTitleColor(UIColorFromRGB(textColor), forState: .Normal)
+        button.setTitleColor(UIColorFromRGB(textColor), for: UIControlState())
         button.titleLabel!.textColor = UIColorFromRGB(textColor)
         return button
     }
     
-    func addButton(action: Selector, text: String, parentButton: UIButton, backgroundImage: String, var xOffset: CGFloat, var yOffset: CGFloat, xOffsetW: CGFloat, yOffsetW: CGFloat) -> UIButton
+    func addButton(_ action: Selector, text: String, parentButton: UIButton, backgroundImage: String, xOffset: CGFloat, yOffset: CGFloat, xOffsetW: CGFloat, yOffsetW: CGFloat) -> UIButton
     {
+        var xOffset = xOffset, yOffset = yOffset
 
         if(currentDevice != deviceType.iPad)
         {
@@ -365,17 +377,18 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         let button: UIButton = addButton(action)
         
         let image = UIImage(named: backgroundImage)
-        button.setBackgroundImage(image, forState: .Normal)
+        button.setBackgroundImage(image, for: UIControlState())
         button.frame = CGRect(x: xOffset, y: yOffset, width: parentButton.frame.width, height: parentButton.frame.height)
-        button.setTitle(text, forState: .Normal)
-        button.backgroundColor = UIColor.clearColor()
+        button.setTitle(text, for: UIControlState())
+        button.backgroundColor = UIColor.clear
         button.titleLabel!.font = parentButton.titleLabel?.font
-        button.setTitleColor(parentButton.titleLabel?.textColor, forState: .Normal)
+        button.setTitleColor(parentButton.titleLabel?.textColor, for: UIControlState())
         return button
     }
     
-    func addStaticImage(imageName: String, var xPos: CGFloat, var yPos: CGFloat, var xPosW: CGFloat, var yPosW: CGFloat, width: CGFloat, height: CGFloat, widthW: CGFloat, heightW: CGFloat) -> UIImageView
+    func addStaticImage(_ imageName: String, xPos: CGFloat, yPos: CGFloat, xPosW: CGFloat, yPosW: CGFloat, width: CGFloat, height: CGFloat, widthW: CGFloat, heightW: CGFloat) -> UIImageView
     {
+        var xPos = xPos, yPos = yPos, xPosW = xPosW, yPosW = yPosW
         
         if(xPos==0)
         {
@@ -408,12 +421,13 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         return imageView
     }
     
-    func addStaticLabel(text: String, font: String, fontSize: CGFloat, var xPos: CGFloat, var yPos: CGFloat, width: CGFloat, height: CGFloat, var xPosW: CGFloat, var yPosW: CGFloat, widthW: CGFloat, heightW: CGFloat, textColor: UInt) -> UILabel
+    func addStaticLabel(_ text: String, font: String, fontSize: CGFloat, xPos: CGFloat, yPos: CGFloat, width: CGFloat, height: CGFloat, xPosW: CGFloat, yPosW: CGFloat, widthW: CGFloat, heightW: CGFloat, textColor: UInt) -> UILabel
         {
+            var xPos = xPos, yPos = yPos, xPosW = xPosW, yPosW = yPosW
             
             let label = UILabel()
             // If xPos, yPos, etc is ZERO, then we calculate the center for the screen.
-            let screenSize: CGRect = UIScreen.mainScreen().bounds
+            let screenSize: CGRect = UIScreen.main.bounds
             
             if(xPos == 0)
             {
@@ -437,13 +451,13 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
                 label.frame = CGRect(x: xPos, y: yPos, width: width, height: height)
             }
             
-            label.backgroundColor = UIColor.clearColor()
+            label.backgroundColor = UIColor.clear
             
-            label.textAlignment = .Center
+            label.textAlignment = .center
             label.text = text
             label.numberOfLines = 0
             label.font =  UIFont(name: font, size: fontSize)
-            label.textColor = UIColor.whiteColor()
+            label.textColor = UIColor.white
             
             self.view.addSubview(label)
             
@@ -455,7 +469,7 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
     
    
     
-    func errorAlert(alertText: String) -> ErrorAlertControl
+    func errorAlert(_ alertText: String) -> ErrorAlertControl
     {
         let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: alertText)
         errorAlertView.delegate = self
@@ -464,28 +478,34 @@ class UIController : ApiRequestController, ErrorControlDelegate, SBSScanDelegate
         return errorAlertView
     }
     
-    func errorAlert(alertText: String, okText: String, cancelText: String) -> ErrorAlertControl
+    func errorAlert(_ alertText: String, okText: String, cancelText: String) -> ErrorAlertControl
     {
         let errorAlertView: ErrorAlertControl = ErrorAlertControl(errorText: alertText)
         errorAlertView.delegate = self
         view.addSubview(errorAlertView)
         backgroundImageView.alpha = 0.50
-        errorAlertView.okButton.setTitle(okText, forState: .Normal)
-        errorAlertView.cancelButton.setTitle(cancelText, forState: .Normal)
+        errorAlertView.okButton.setTitle(okText, for: UIControlState())
+        errorAlertView.cancelButton.setTitle(cancelText, for: UIControlState())
         return errorAlertView
     }
     
     func errorOK(){
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                 self.backgroundImageView.alpha = 1.0
             }, completion: nil)
     }
     
     func errorCancel() {
-        UIView.animateWithDuration(0.5, delay: 0.0,
-            options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: 0.5, delay: 0.0,
+            options: .curveEaseOut, animations: {
                     self.backgroundImageView.alpha = 1.0
             }, completion: nil)
     }
+    
+    func resetScreen()
+    {
+  
+    }
+
 }

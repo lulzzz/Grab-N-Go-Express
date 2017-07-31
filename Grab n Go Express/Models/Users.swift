@@ -16,7 +16,7 @@ class User {
     var balance: Double = 0.00
     var accountOperator: String = ""
     
-    func userAuthenticated(phoneNumber: String, passcode: String)
+    func userAuthenticated(_ phoneNumber: String, passcode: String)
     {
         self.phoneNumber = phoneNumber
         self.passcode = passcode
@@ -33,10 +33,10 @@ class User {
     func toDictionary() -> Dictionary<String, AnyObject>
     {
         var rVal: Dictionary = Dictionary<String, AnyObject>()
-        rVal["phone_num"] = phoneNumber
-        rVal["passcode"] = passcode
-        rVal["balance"] = balance
-        rVal["operator"] = accountOperator
+        rVal["phone_num"] = phoneNumber as AnyObject?
+        rVal["passcode"] = passcode as AnyObject?
+        rVal["balance"] = balance as AnyObject?
+        rVal["operator"] = accountOperator as AnyObject?
         return rVal
     }
 }

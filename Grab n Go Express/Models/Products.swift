@@ -41,10 +41,10 @@ class Product {
     func toDictionary() -> Dictionary<String, AnyObject>
     {
         var rVal: Dictionary = Dictionary<String, AnyObject>()
-        rVal["description"] = description
-        rVal["barcode"] = barcode
-        rVal["price"] = price
-        rVal["tax"] = totalTax()
+        rVal["description"] = description as AnyObject?
+        rVal["barcode"] = barcode as AnyObject?
+        rVal["price"] = price as AnyObject?
+        rVal["tax"] = totalTax() as AnyObject?
         return rVal
     }
 }

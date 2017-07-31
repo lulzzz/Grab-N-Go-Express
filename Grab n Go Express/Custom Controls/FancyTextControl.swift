@@ -28,7 +28,7 @@ class FancyTextControl: UIView {
         fatalError("This class does not support NSCoding")
     }
     
-    func UIColorFromRGB(rgbValue: UInt) -> UIColor {
+    func UIColorFromRGB(_ rgbValue: UInt) -> UIColor {
         return UIColor(
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
@@ -37,7 +37,7 @@ class FancyTextControl: UIView {
         )
     }
     
-    func addText(text: String, font: String, size: CGFloat, color: UInt, x: CGFloat, y: CGFloat) -> UILabel
+    func addText(_ text: String, font: String, size: CGFloat, color: UInt, x: CGFloat, y: CGFloat) -> UILabel
     {
         let label = UILabel()
         label.text = text;

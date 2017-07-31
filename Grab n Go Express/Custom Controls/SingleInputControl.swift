@@ -26,7 +26,7 @@ class SingleInputControl: UIView, KeypadControlDelegate{
         keypadControl.delegate = self
         addSubview(keypadControl)
         
-        backgroundColor = UIColor.clearColor()
+        backgroundColor = UIColor.clear
         
         let hatchedBackground: UIImage = UIImage(named: "hatched_background.png")!
         let hatchedBackgroundView = UIImageView(image: hatchedBackground)
@@ -42,15 +42,15 @@ class SingleInputControl: UIView, KeypadControlDelegate{
         let fontObj = UIFont(name: font, size: fontSize)
         
         label = UILabel(frame: CGRect(x: frame.width/2-339/2, y: 0, width: 339, height: 115))
-        label.backgroundColor = UIColor.clearColor()
-        label.textAlignment = .Center
+        label.backgroundColor = UIColor.clear
+        label.textAlignment = .center
         label.numberOfLines = 0
         label.font = fontObj
-        label.textColor = UIColor.whiteColor()
+        label.textColor = UIColor.white
         
         //let textInput: UITextField = UITextField(frame: textInputRect)
         textInput.frame = textInputRect
-        textInput.textAlignment = .Center
+        textInput.textAlignment = .center
         textInput.font = fontObj
         addSubview(textInput)
         addSubview(label)
@@ -64,7 +64,7 @@ class SingleInputControl: UIView, KeypadControlDelegate{
         fatalError("This class does not support NSCoding")
     }
     
-    func UIColorFromRGB(rgbValue: UInt) -> UIColor {
+    func UIColorFromRGB(_ rgbValue: UInt) -> UIColor {
         return UIColor(
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
@@ -73,7 +73,7 @@ class SingleInputControl: UIView, KeypadControlDelegate{
         )
     }
     
-    func keypadDigitPressed(digitPressed: String) {
+    func keypadDigitPressed(_ digitPressed: String) {
         textInput.text = textInput.text! + digitPressed
     }
     

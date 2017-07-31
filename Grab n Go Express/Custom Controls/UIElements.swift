@@ -23,7 +23,7 @@ extension UIControl
     var heightW: CGFloat = 0.00
     */
     
-    func setBackgroundImage(imageName: String)
+    func setBackgroundImage(_ imageName: String)
     {
             let backgroundImage = UIImage(named: imageName)
             let imageView = UIImageView(image: backgroundImage)

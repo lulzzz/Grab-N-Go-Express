@@ -9,8 +9,8 @@
 import UIKit
 
 @objc protocol KeypadControlDelegate{
-    optional func keypadDigitPressed(digitPressed: String)
-    optional func keypadClear()
+    @objc optional func keypadDigitPressed(_ digitPressed: String)
+    @objc optional func keypadClear()
 }
 
 class KeypadControl : UIView
@@ -24,18 +24,18 @@ class KeypadControl : UIView
     var keypadControlHeight: CGFloat = 22*5+50*4
     
     enum keyboardType{
-        case Keypad
-        case Keyboard
+        case keypad
+        case keyboard
     }
     
-    var inputType: keyboardType = .Keypad
+    var inputType: keyboardType = .keypad
     
     var delegate:KeypadControlDelegate?
     
     override init (frame : CGRect) {
         super.init(frame : frame)
 
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        if(UIDevice.current.userInterfaceIdiom == .pad)
         {
             buttonWidth = 90
         }
@@ -56,7 +56,7 @@ class KeypadControl : UIView
         fatalError("This class does not support NSCoding")
     }
     
-    func UIColorFromRGB(rgbValue: UInt) -> UIColor {
+    func UIColorFromRGB(_ rgbValue: UInt) -> UIColor {
         return UIColor(
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
@@ -72,7 +72,7 @@ class KeypadControl : UIView
         
         //let screenSize: CGRect = UIScreen.mainScreen().bounds
         
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        if(UIDevice.current.userInterfaceIdiom == .pad)
         {
             //self.frame = CGRect(x: 0, y: 0, width: 22*4+90*3, height: 22*5+90*4))
         }
@@ -81,7 +81,7 @@ class KeypadControl : UIView
             //self.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
         }
         
-        if(inputType == .Keypad)
+        if(inputType == .keypad)
         {
             createKeypadDigits()
         }
@@ -93,31 +93,31 @@ class KeypadControl : UIView
     
     func createKeypadDigits()
     {
-        createKeypadDigit("1", digitPressed: "digitPressed:", xPos: buttonSpacing, yPos: buttonSpacing)
-        createKeypadDigit("2", digitPressed: "digitPressed:", xPos: buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing)
-        createKeypadDigit("3", digitPressed: "digitPressed:", xPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing)
+        createKeypadDigit("1", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing, yPos: buttonSpacing)
+        createKeypadDigit("2", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing)
+        createKeypadDigit("3", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing)
         
-        createKeypadDigit("4", digitPressed: "digitPressed:", xPos: buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing)
-        createKeypadDigit("5", digitPressed: "digitPressed:", xPos: buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing)
-        createKeypadDigit("6", digitPressed: "digitPressed:", xPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing)
+        createKeypadDigit("4", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing)
+        createKeypadDigit("5", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing)
+        createKeypadDigit("6", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing)
         
-        createKeypadDigit("7", digitPressed: "digitPressed:", xPos: buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
-        createKeypadDigit("8", digitPressed: "digitPressed:", xPos: buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
-        createKeypadDigit("9", digitPressed: "digitPressed:", xPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
+        createKeypadDigit("7", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
+        createKeypadDigit("8", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
+        createKeypadDigit("9", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
         
-        createKeypadDigit("0", digitPressed: "digitPressed:", xPos: buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
+        createKeypadDigit("0", digitPressed: #selector(KeypadControl.digitPressed(_:)), xPos: buttonSpacing, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
         
-        createClearDigit("Clear", digitPressed: "clearPressed:", xPos: buttonSpacing+buttonWidth+22, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
+        createClearDigit("Clear", digitPressed: #selector(KeypadControl.clearPressed(_:)), xPos: buttonSpacing+buttonWidth+22, yPos: buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing+buttonWidth+buttonSpacing)
         
     }
     
-    func createKeypadDigit(digit: String, digitPressed: Selector, xPos: CGFloat, yPos: CGFloat)
+    func createKeypadDigit(_ digit: String, digitPressed: Selector, xPos: CGFloat, yPos: CGFloat)
     {
         //let button = UIButton(type: UIButtonType.Custom) as UIButton
         //UIButton(type: UIButtonType.System) as UIButton
-        let button = UIButton(type: UIButtonType.System) as UIButton
-        button.frame = CGRectMake(xPos, yPos, buttonWidth, buttonWidth)
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        let button = UIButton(type: UIButtonType.system) as UIButton
+        button.frame = CGRect(x: xPos, y: yPos, width: buttonWidth, height: buttonWidth)
+        if(UIDevice.current.userInterfaceIdiom == .pad)
         {
         button.setBackgroundImage("keypad_button_background3.png")
         button.titleLabel!.font = UIFont(name: "Arial", size: 58.0)
@@ -129,41 +129,41 @@ class KeypadControl : UIView
             //button.backgroundColor = UIColor.blueColor()
         }
         
-        button.setTitle(digit, forState: UIControlState.Normal)
-        button.setTitleColor(UIColor.blueColor(), forState: .Normal)
+        button.setTitle(digit, for: UIControlState())
+        button.setTitleColor(UIColor.blue, for: UIControlState())
         
         
-        button.addTarget(self, action: digitPressed, forControlEvents: UIControlEvents.TouchDown)
+        button.addTarget(self, action: digitPressed, for: UIControlEvents.touchDown)
         addSubview(button)
     }
     
-    func createClearDigit(digit: String, digitPressed: Selector, xPos: CGFloat, yPos: CGFloat)
+    func createClearDigit(_ digit: String, digitPressed: Selector, xPos: CGFloat, yPos: CGFloat)
     {
-        let button = UIButton(type: UIButtonType.Custom) as UIButton
-        if(UIDevice.currentDevice().userInterfaceIdiom == .Pad)
+        let button = UIButton(type: UIButtonType.custom) as UIButton
+        if(UIDevice.current.userInterfaceIdiom == .pad)
         {
-        button.frame = CGRectMake(xPos, yPos, buttonWidth*2+buttonSpacing, buttonWidth)
+        button.frame = CGRect(x: xPos, y: yPos, width: buttonWidth*2+buttonSpacing, height: buttonWidth)
             button.setBackgroundImage("enterkey_button_background.png")
         }
         else
         {
-        button.frame = CGRectMake(xPos, yPos, buttonWidth*2+buttonSpacing, buttonWidth)
-            button.backgroundColor = UIColor.blueColor()
+        button.frame = CGRect(x: xPos, y: yPos, width: buttonWidth*2+buttonSpacing, height: buttonWidth)
+            button.backgroundColor = UIColor.blue
         }
         
-        button.setTitle(digit, forState: UIControlState.Normal)
-        button.setTitleColor(UIColor.blackColor(), forState: .Normal)
+        button.setTitle(digit, for: UIControlState())
+        button.setTitleColor(UIColor.black, for: UIControlState())
         button.titleLabel!.font = UIFont(name: "Arial", size: 40.0)
-        button.addTarget(self, action: "clearPressed:", forControlEvents: UIControlEvents.TouchUpInside)
+        button.addTarget(self, action: #selector(KeypadControl.clearPressed(_:)), for: UIControlEvents.touchUpInside)
         addSubview(button)
     }
     
-    func digitPressed(sender: UIButton)
+    func digitPressed(_ sender: UIButton)
     {
         delegate?.keypadDigitPressed!(sender.titleLabel!.text!)
     }
     
-    func clearPressed(sender: UIButton)
+    func clearPressed(_ sender: UIButton)
     {
         delegate?.keypadClear!()
     }
